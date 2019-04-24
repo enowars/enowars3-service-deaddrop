@@ -1,14 +1,12 @@
 -module(main).
+-compile(export_all).
 
--export([hello_world/0, read_file/1]).
-
-read_file(Path) ->
-    Result = file:open(Path, [read]),
-    case Result of 
-        {ok, Fh} -> 
-            io:fwrite("Yueah.\nContent: ~p.\n", [file:read_line(Fh)]);
-        {error, Reason} -> io:fwrite("Fail: ~p.\n", [Reason])
-    end.
 
 hello_world() ->
     io:fwrite("Hello World!").
+
+create_socket() ->
+    case get_tcp:listen(0, []) of 
+        {ok, ListenSocket} -> ListenSocket;
+        {error, Reason} -> io:fwrite("Error occured while creating TCP Socket: ~p \n", [Reason])
+    end.

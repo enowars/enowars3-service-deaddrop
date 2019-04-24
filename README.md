@@ -17,3 +17,7 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
 * Some kind of path traversal when re-sending messages?
 * Overflowing the log files?
 * ___________________
+
+# Notes
+
+* socket_server.erl is based on code provided by 'Jesse E.I. Farmer <jesse@20bits.com>'
