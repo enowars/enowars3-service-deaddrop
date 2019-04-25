@@ -13,31 +13,42 @@
 		ip=any,
 		lsocket=null}).
 
+
 start(Name, Port, Loop) ->
 	State = #server_state{port = Port, loop = Loop},
-	gen_server:start_link({local, Name}, ?MODULE, State, []).
+	case gen_server:start_link({local, Name}, ?MODULE, State, []) of 
+		{ok, Pid} -> Pid;
+		{error, {already_started, Pid}} -> Pid;
+		% gen_server:init failed
+		{error, Reason} -> Reason;
+		ignore -> ignore
+	end.
+
 
 init(State = #server_state{port=Port}) ->
 	case gen_tcp:listen(Port, ?TCP_OPTIONS) of
    		{ok, LSocket} ->
    			NewState = State#server_state{lsocket = LSocket},
-   			{ok, accept(NewState)};
+   			{ok, spawn_accept_loop(NewState)};
    		{error, Reason} ->
    			{stop, Reason}
 	end.
 
 handle_cast({accepted, _Pid}, State=#server_state{}) ->
-	{noreply, accept(State)}.
+	{noreply, spawn_accept_loop(State)}.
 
-accept_loop({Server, LSocket, {M, F}}) ->
+% Loop waiting for new connection requests. 
+% Upon request asynchronously spawns new accept_loop process and handles incoming connection.
+accept_loop({Server, LSocket, {M, Handler}}) ->
 	{ok, Socket} = gen_tcp:accept(LSocket),
 	% Let the server spawn a new process and replace this loop
 	% with the echo loop, to avoid blocking 
 	gen_server:cast(Server, {accepted, self()}),
-	M:F(Socket).
+	M:Handler(Socket).
 	
 % To be more robust we should be using spawn_link and trapping exits
-accept(State = #server_state{lsocket=LSocket, loop = Loop}) ->
+% Creates new accept_loop process.
+spawn_accept_loop(State = #server_state{lsocket=LSocket, loop = Loop}) ->
 	proc_lib:spawn(?MODULE, accept_loop, [{self(), LSocket, Loop}]),
 	State.
 
