@@ -1,2 +1,6 @@
 # Ignore compiled code.
 *.beam
+ebin/
+deps/
+.erlang.mk
+_rel
