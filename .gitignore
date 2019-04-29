@@ -4,3 +4,4 @@ ebin/
 deps/
 .erlang.mk
 _rel
+.vagrant
