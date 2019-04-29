@@ -12,4 +12,10 @@ init(Req0=#{method := <<"POST">>}, State) ->
         #{<<"content-type">> => <<"text/plain">>},
         <<"PUBLISH!">>,
         Req0),
+    {ok, Req, State};
+
+init(Req0, State) ->
+    Req = cowboy_req:reply(405, #{
+        <<"allow">> => <<"POST">>
+    }, Req0),
     {ok, Req, State}.
