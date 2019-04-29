@@ -2,6 +2,10 @@
 
 This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
 
+## Dependencies
+
+- Erlang 21
+
 # Feature Ideas
 
 * Clients will be able to subscribe and publish messages to topics. Every subscriber of a topic will receive messages published to said topic. 
