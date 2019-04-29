@@ -3,4 +3,6 @@
 ebin/
 deps/
 .erlang.mk
-_rel
+_rel/
+.vagrant/
+msq_ctf_service.d
