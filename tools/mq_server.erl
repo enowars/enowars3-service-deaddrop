@@ -22,14 +22,14 @@ loop(Socket) ->
             ok
     end.
 
-handle_publish() ->
-    "handle_publish".
+% handle_publish() ->
+%     "handle_publish".
 
-handle_subscribe() ->
-    "handle_subscribe".
+% handle_subscribe() ->
+%     "handle_subscribe".
 
-handle_topics() ->
-    "handle_topics".
+% handle_topics() ->
+%     "handle_topics".
 
-handle_new_topic() ->
-    "handle_new_topic".
+% handle_new_topic() ->
+%     "handle_new_topic".

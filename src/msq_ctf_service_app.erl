@@ -6,12 +6,18 @@
 
 start(_Type, _Args) ->
 	 Dispatch = cowboy_router:compile([
-        {'_', [{"/", hello_handler, []}]}
+            {'_', [{"/publish", publish_handler, []},
+            {"/subscribe", subscribe_handler, []},
+            {"/topics", topics_handler, []},
+            {"/add_topic", add_topic_handler, []}
+        ]} 
     ]),
-    {ok, _} = cowboy:start_clear(my_http_listener,
+    % TODO: Lower the amount of allowed connections?
+    {ok, _} = cowboy:start_clear(api_listener,
         [{port, 8080}],
         #{env => #{dispatch => Dispatch}}
     ),
+    cowboy:set_env(api_listener, dispatch, Dispatch),
 	msq_ctf_service_sup:start_link().
 
 stop(_State) ->
