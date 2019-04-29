@@ -21,3 +21,7 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
 # Notes
 
 * socket_server.erl is based on code provided by 'Jesse E.I. Farmer <jesse@20bits.com>'
+
+## References
+
+- https://github.com/erlang/docker-erlang-example
