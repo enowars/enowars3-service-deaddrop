@@ -6,13 +6,8 @@
 
 
 start(_Type, _Args) ->
-    Pid = case gen_server:start_link({global, subscriber_pool}, ?MODULE, [], []) of 
-        {ok, Pid} -> Pid;
-        {error, {already_started,Pid}} -> Pid
-        % {error, _} -> 
-        %     io:fwrite("Error while starting subscriber_pool process."),
-        %     throw("error")
-    end,
+    {ok, _} = gen_server:start_link({global, subscriber_pool}, subscriber_pool, [], []),
+    
     Dispatch = cowboy_router:compile([
             {'_', [{"/publish", publish_handler, []},
             {"/subscribe", subscribe_handler, []},

@@ -1,6 +1,6 @@
 %%% counter_server.erl
 % simple counter implemented as a gen_server
--module(counter_server).
+-module(subscriber_pool).
 -behavior(gen_server).
 
 % API
@@ -28,8 +28,11 @@ handle_call(click, _From, N) ->
   % the third value is the new state
   {reply, N + 1, N + 1}.
 
+handle_cast(Request, State) -> 
+  io:fwrite("subscriber_pool received msg: ~p \n", [Request]),
+  {noreply, State}.
+
 % basically, we ignore these, but keep the same counter state
-handle_cast(_Msg, N) -> {noreply, N}.
 handle_info(_Msg, N) -> {noreply, N}.
 code_change(_OldVsn, N, _Other) -> {ok, N}.
 terminate(_Reason, _N) -> ok.

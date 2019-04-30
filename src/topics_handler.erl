@@ -6,8 +6,8 @@
 init(Req0=#{method := <<"GET">>}, State) ->
     Topics = case file:read_file("topics.txt") of 
         {ok, Content} -> 
-            Binary = binary_to_list(Content),
-            List = string:tokens(Binary, "\n"),
+            String = binary_to_list(Content),
+            List = string:tokens(String, "\n"),
             lists:map(fun remove_private_topics/1, List);
         {error, enoent} -> "No topics created yet."
     end,
