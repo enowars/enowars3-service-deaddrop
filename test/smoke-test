@@ -62,13 +62,10 @@ fi
 print_result "$((test_num+=1))" "List topics" "${return_code}"
 
 response="$(printf '%s\n' "SUBSCRIBE: public" | websocat "${ws}${hostname}:${port}${subscribe_endpoint}")"
-echo ${response}
 return_code="${?}"
 if [ "${return_code}" = 0 ]
 then
-    if printf -- '%s' "${response}" | head -n 1 | grep -- '^HTTP.*200 OK' >/dev/null && \
-       printf -- '%s' "${response}" | grep -- '^+   public' >/dev/null && \
-       ! printf -- '%s' "${response}" | grep -- 'private' >/dev/null
+    if printf -- '%s' "${response}" | grep -- 'Subscribed.' >/dev/null
     then
         return_code="0"
     else
