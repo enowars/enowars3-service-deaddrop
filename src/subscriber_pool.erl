@@ -23,13 +23,12 @@ init([]) ->
   % the second value is the initial counter state
   {ok, 0}.
 
-handle_call(click, _From, N) ->
-  % the second value is sent back to the caller
-  % the third value is the new state
-  {reply, N + 1, N + 1}.
+handle_call(Request, _From, State) ->
+  io:fwrite("subscriber_pool received msg from call: ~p \n", [Request]),
+  {reply, "Processed PUBLISH.", State}.
 
 handle_cast(Request, State) -> 
-  io:fwrite("subscriber_pool received msg: ~p \n", [Request]),
+  io:fwrite("subscriber_pool received msg from cast: ~p \n", [Request]),
   {noreply, State}.
 
 % basically, we ignore these, but keep the same counter state
