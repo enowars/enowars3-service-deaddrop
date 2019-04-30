@@ -1,0 +1,42 @@
+#! /bin/sh -
+
+set -eu
+
+clean_up() {
+    set +eu
+    ${service_cmd} stop >/dev/null
+}
+
+print_result() {
+    test_num="${1}"
+    description="${2}"
+    return_code="${3}"
+
+    if [ "${return_code}" = "0" ]
+    then
+        printf -- 'ok %d - %s\n' "${test_num}" "${description}"
+    else
+        printf -- 'not ok %d - %s\n' "${test_num}" "${description}"
+    fi
+}
+
+port="8080"
+url_base="http://127.0.0.1"
+add_topic_endpoint="/add_topic"
+topic_endpoint="/topics"
+service_cmd="_rel/msq_ctf_service_release/bin/msq_ctf_service_release"
+
+trap 'clean_up' EXIT
+
+${service_cmd} start
+test_num=0
+
+curl --data "+ public" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${url_base}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
+print_result "$((test_num+=1))" "Add public topic" "${?}"
+
+curl --data "- private" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${url_base}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
+print_result "$((test_num+=1))" "Add private topic" "${?}"
+
+# XXX: Grep the results.
+curl --include --request GET --silent "${url_base}:${port}${topic_endpoint}"
+print_result "$((test_num+=1))" "Add private topic" "${?}"
