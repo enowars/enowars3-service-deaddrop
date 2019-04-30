@@ -15,6 +15,12 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
   - `/add_topic`
 - Listening port: 8080
 
+## Testing
+
+```sh
+make test
+```
+
 # Feature Ideas
 
 * Clients will be able to subscribe and publish messages to topics. Every subscriber of a topic will receive messages published to said topic. 

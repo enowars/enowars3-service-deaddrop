@@ -8,4 +8,8 @@ dep_cowboy_commit = 2.6.3
 BUILD_DEPS = reload_mk
 DEP_PLUGINS = cowboy, reload_mk
 
+.PHONY: test
+test:
+	sh test/smoke-test
+
 include erlang.mk
