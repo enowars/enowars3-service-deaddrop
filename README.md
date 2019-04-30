@@ -6,20 +6,31 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
 
 - Erlang 21
 
-## Notes about the service
+# Notes about the service
 
-- Endpoints
-  - `/publish`
-  - `/subscribe`
-  - `/topics`
-  - `/add_topic`
 - Listening port: 8080
+
+## Endpoints
+  - `/publish` 
+    * POST 
+    * Headers -- Content-type: application/x-www-form-urlencoded
+    * Payload: `Topic 1:message_string`
+  - `/subscribe`
+    * Upgrades to Websocket automatically
+    * When connected use `SUBSCRIBE: topicname` to subscribe to topics.
+  - `/topics` 
+    * GET 
+  - `/add_topic` 
+    * PATCH 
+    * Headers -- Content-type: application/x-www-form-urlencdoed
+    * Payload: 
+        * `- topicname` for private topics
+        * `+ topicname` or `topicname` for public topics
 
 ## Testing
 
-Fist, run `make rel`.
-
 ```sh
+make rel
 make test
 ```
 

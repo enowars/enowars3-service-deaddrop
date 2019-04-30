@@ -31,7 +31,7 @@ init(Req0, State) ->
 append_topic(Topic) ->
     FileName = "topics.txt",
     % Check if the is indicated as private, otherwise prepend a '+'
-    NewTopic = case string:prefix(Topic, "- ") of 
+    NewTopic = case string:prefix(string:trim(Topic), "- ") of 
         nomatch -> "+ " ++ Topic ++ "\n";
         _ -> Topic ++ "\n"
     end,
