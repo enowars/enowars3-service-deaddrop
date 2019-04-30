@@ -6,3 +6,4 @@ deps/
 _rel/
 .vagrant/
 msq_ctf_service.d
+*.dump
