@@ -17,9 +17,16 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
 
 ## Testing
 
+Fist, run `make rel`.
+
 ```sh
 make test
 ```
+
+### Dependencies
+
+- cURL
+- [websocat](https://github.com/vi/websocat)
 
 # Feature Ideas
 
