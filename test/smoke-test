@@ -22,9 +22,12 @@ print_result() {
 }
 
 port="8080"
-url_base="http://127.0.0.1"
+http="http://"
+ws="ws://"
+hostname="127.0.0.1"
 add_topic_endpoint="/add_topic"
 topic_endpoint="/topics"
+subscribe_endpoint="/subscribe"
 root_dir="_rel/msq_ctf_service_release"
 topics_file_path="${root_dir}/topics.txt"
 service_cmd="${root_dir}/bin/msq_ctf_service_release"
@@ -34,19 +37,21 @@ trap 'clean_up' EXIT
 ${service_cmd} start
 test_num=0
 
-curl --data "+ public" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${url_base}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
+test_num="0"
+
+curl --data "+ public" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${http}${hostname}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
 print_result "$((test_num+=1))" "Add public topic" "${?}"
 
-curl --data "- private" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${url_base}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
+curl --data "- private" --header "Content-Type: application/x-www-form-urlencoded" --include --request PATCH --silent "${http}${hostname}:${port}${add_topic_endpoint}" | head -n 1 | grep '^HTTP.*200 OK' >/dev/null
 print_result "$((test_num+=1))" "Add private topic" "${?}"
 
-reponse="$(curl --include --request GET --silent "${url_base}:${port}${topic_endpoint}")"
+response="$(curl --include --request GET --silent "${http}${hostname}:${port}${topic_endpoint}")"
 return_code="${?}"
 if [ "${return_code}" = 0 ]
 then
-    if printf -- '%s' "${reponse}" | head -n 1 | grep -- '^HTTP.*200 OK' >/dev/null && \
-       printf -- '%s' "${reponse}" | grep -- '^+   public' >/dev/null && \
-       ! printf -- '%s' "${reponse}" | grep -- 'private' >/dev/null
+    if printf -- '%s' "${response}" | head -n 1 | grep -- '^HTTP.*200 OK' >/dev/null && \
+       printf -- '%s' "${response}" | grep -- '^+   public' >/dev/null && \
+       ! printf -- '%s' "${response}" | grep -- 'private' >/dev/null
     then
         return_code="0"
     else
