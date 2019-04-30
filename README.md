@@ -6,6 +6,15 @@ This service will be a message queue much like [Apache Kafka](https://kafka.apac
 
 - Erlang 21
 
+## Notes about the service
+
+- Endpoints
+  - `/publish`
+  - `/subscribe`
+  - `/topics`
+  - `/add_topic`
+- Listening port: 8080
+
 # Feature Ideas
 
 * Clients will be able to subscribe and publish messages to topics. Every subscriber of a topic will receive messages published to said topic. 
