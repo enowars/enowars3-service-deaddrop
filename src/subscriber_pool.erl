@@ -1,10 +1,9 @@
 %%% counter_server.erl
-% simple counter implemented as a gen_server
 -module(subscriber_pool).
 -behavior(gen_server).
 
 % API
--export([new/0, click/1]).
+-export([new/0]).
 
 % required by gen_server
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -13,23 +12,49 @@
 new() ->
   gen_server:start(?MODULE, [], []).
 
-click(Pid) ->
-  gen_server:call(Pid, click).
 
 %%% gen_server callbacks
 %%%   these are required to implement the gen_server behavior
 %%%   we're really only using init and handle_call
 init([]) ->
-  % the second value is the initial counter state
-  {ok, 0}.
+  % the second value is the initial state, an empty dict.
+  {ok, [dict:new()]}.
 
 handle_call(Request, _From, State) ->
   io:fwrite("subscriber_pool received msg from call: ~p \n", [Request]),
-  {reply, "Processed PUBLISH.", State}.
+  {_Method, Message} = Request,
+  ParsedMessage = string:tokens(binary_to_list(Message), ":"),
+  io:fwrite("ParsedMsg: ~p \n", [ParsedMessage]),
+  io:fwrite("ParsedState: ~p \n", [hd(State)]),
+  ResponseMsg = case dict:find(hd(ParsedMessage), hd(State)) of
+    {ok, Value} -> 
+      case notify_subscribers(Value, tl(ParsedMessage)) of 
+        done -> "Processed PUBLISH.";
+        error -> "Error returned by notify_subscribers."
+      end;
+    error -> "Error occured while searching for given Topic."
+  end,
+  {reply, ResponseMsg, State}.
 
 handle_cast(Request, State) -> 
+  {Method, From, Topic} = Request,
   io:fwrite("subscriber_pool received msg from cast: ~p \n", [Request]),
-  {noreply, State}.
+  NewState = case Method of
+    "New SUB" -> [dict:append(Topic, From, hd(State))];
+    _ -> 
+      io:fwrite("Invalid Method."), 
+      State
+  end,
+  {noreply, NewState}.
+
+% Iteratre over list of PIDs and send msg to each.
+notify_subscribers([], _) -> 
+  done;
+notify_subscribers([Head | Tail], Message) ->
+  io:fwrite("Sending msg to process: ~p \n", [Head]),
+  Head ! {publish, Message},
+  notify_subscribers(Tail, Message).
+  
 
 % basically, we ignore these, but keep the same counter state
 handle_info(_Msg, N) -> {noreply, N}.

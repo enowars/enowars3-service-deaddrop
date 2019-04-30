@@ -33,8 +33,9 @@ websocket_handle(_Frame, State) ->
     {ok, State}.
 
 
-websocket_info({log, Text}, State) ->
+websocket_info({publish, Text}, State) ->
     {reply, {text, Text}, State};
+
 websocket_info(_Info, State) ->
     {ok, State}.
 
