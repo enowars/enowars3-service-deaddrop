@@ -6,10 +6,9 @@
 
 init(Req0=#{method := <<"PATCH">>}, State) ->
     % Decode http body
-    NewTopic = case cowboy_req:read_urlencoded_body(Req0) of
+    NewTopic = case cowboy_req:read_body(Req0) of
         {ok, Data, _} -> 
-            {Message, true} = hd(Data),
-            binary_to_list(Message);
+            string:trim(binary_to_list(Data));
         {error, _} -> io:fwrite("Error while parsing sent topic")
     end,
 
@@ -27,20 +26,21 @@ init(Req0, State) ->
     }, Req0),
     {ok, Req, State}.
 
-% Format topic string and write it to topics file.
+% Check for duplicates, format and write topic string to topics file.
 append_topic(Topic) ->
     FileName = "topics.txt",
-    % Check if the is indicated as private, otherwise prepend a '+'
-    NewTopic = case string:prefix(string:trim(Topic), "- ") of 
-        nomatch -> "+ " ++ Topic ++ "\n";
-        _ -> Topic ++ "\n"
-    end,
-    % Write new Topic to topics file
-    case file:open(FileName, [append]) of 
-        {ok, Fh} -> 
-            file:write(Fh, NewTopic),
-            {ok};
-        {error, enoent} -> {error, "No topics created yet."}
+    case check_duplicate_topic(FileName, Topic) of 
+        true -> {error, "Topic already exists."};
+        false ->
+            % Check if the topic is indicated as private, otherwise prepend a '+'
+            NewTopic = Topic ++ "\n",
+            % Write new Topic to topics file
+            case file:open(FileName, [append]) of 
+                {ok, Fh} -> 
+                    file:write(Fh, NewTopic),
+                    {ok};
+                {error, enoent} -> {error, "No topics created yet."}
+            end
     end.
 
 % XXX: Silence compiler warnings.
@@ -48,3 +48,17 @@ handle_call(_Msg, _Caller, State) -> {noreply, State}.
 handle_info(_Msg, Library) -> {noreply, Library}.
 terminate(_Reason, _Library, _State) -> ok.
 code_change(_OldVersion, Library, _Extra) -> {ok, Library}.
+
+
+check_duplicate_topic(FileName, Topic) ->
+    % Check for duplicates
+    case file:read_file(FileName) of 
+        {ok, Binary} -> 
+            String = binary_to_list(Binary),
+            Topics = string:tokens(String, "\n"),
+            case lists:member(Topic, Topics) of 
+                true -> true;
+                false -> false
+            end;
+        {error, enoent} -> {error, "No topics created yet."}
+    end.

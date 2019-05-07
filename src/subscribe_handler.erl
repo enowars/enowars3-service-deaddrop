@@ -15,6 +15,7 @@ websocket_init(State) ->
 websocket_handle(Frame = {text, MessageBin}, State) ->
     io:fwrite("ws handler received frame: ~p \n", [Frame]),
     Message = binary_to_list(MessageBin),
+    % TODO: Check for actual method. SUBSCRIBE or REPLAY
     Reply = case string:prefix(Message, "SUBSCRIBE: ") of 
         nomatch -> "Invalid Method.";
         Topic -> 
