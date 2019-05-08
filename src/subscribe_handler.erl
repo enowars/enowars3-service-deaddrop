@@ -5,7 +5,7 @@
 
 init(Req0, State) ->
     % gen_server:cast({global, subscriber_pool}, {"New WS", self()}),
-    {cowboy_websocket, Req0, State}.
+    {cowboy_websocket, Req0, State, #{idle_timeout => 120000}}.
 
 websocket_init(State) ->
     io:fwrite("WS State: ~p \n", [State]),
