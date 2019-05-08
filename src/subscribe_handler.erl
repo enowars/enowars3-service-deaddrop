@@ -14,25 +14,28 @@ websocket_init(State) ->
 
 websocket_handle(Frame = {text, MessageBin}, State) ->
     io:fwrite("ws handler received frame: ~p \n", [Frame]),
-    Message = binary_to_list(MessageBin),
-    % TODO: Check for actual method. SUBSCRIBE or REPLAY
-    Reply = case string:prefix(Message, "SUBSCRIBE: ") of 
-        nomatch -> "Invalid Method.";
-        Topic -> 
-            % Remove whitespaces and newlines
-            NewTopic = string:trim(Topic),
-            case check_topic(NewTopic) of
-                true -> 
-                    subscribe(NewTopic),
+    List = string:tokens(binary_to_list(MessageBin), ":"),
+    Method = hd(List),
+    Content = hd(tl(List)),
+    % Remove whitespaces and newlines
+    Topic = string:trim(Content),
+    Reply = case check_topic(Topic) of
+        true -> 
+            case Method of 
+                "SUBSCRIBE" -> 
+                    subscribe(Topic),
                     "Subscribed.";
-                false -> "Unknown Topic."
-            end
+                "REPLAY" ->
+                    Result = replay(Topic),
+                    Result ++ "\n\n Finished replay.";
+                _ -> "Invalid Method."
+            end;
+        false -> "Unknown Topic."
     end,
     {reply, {text, list_to_binary(Reply)}, State};
 
 websocket_handle(_Frame, State) ->
     {ok, State}.
-
 
 websocket_info({publish, Text}, State) ->
     {reply, {text, Text}, State};
@@ -43,6 +46,10 @@ websocket_info(_Info, State) ->
 subscribe(Topic) ->
     gen_server:cast({global, subscriber_pool}, {"New SUB", self(), Topic}).
 
+replay(Topic) -> 
+    Result = gen_event:call({global, file_handler}, file_handler, {replay, Topic}),
+    % io:fwrite("rplay got: ~p \n", [Result]).
+    Result.
 
 check_topic(Topic) ->
     case file:read_file("topics.txt") of 

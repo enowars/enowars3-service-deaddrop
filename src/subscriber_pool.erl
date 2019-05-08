@@ -21,10 +21,7 @@ init([]) ->
   {ok, [dict:new()]}.
 
 handle_call(Request, _From, State) ->
-  io:fwrite("subscriber_pool received msg from call: ~p \n", [Request]),
   {_Method, Topic, Message} = Request,
-  io:fwrite("Rcvd Topic: ~p \n", [Topic]),
-  io:fwrite("Rcvd Message: ~p \n", [Message]),
   % State is a list of one dict. 
   ResponseMsg = case dict:find(Topic, hd(State)) of
     {ok, Value} -> 
@@ -38,7 +35,6 @@ handle_call(Request, _From, State) ->
 
 handle_cast(Request, State) -> 
   {Method, From, Topic} = Request,
-  io:fwrite("subscriber_pool received msg from cast: ~p \n", [Request]),
   NewState = case Method of
     "New SUB" -> [dict:append(Topic, From, hd(State))];
     _ -> 
@@ -51,7 +47,6 @@ handle_cast(Request, State) ->
 notify_subscribers([], _) -> 
   done;
 notify_subscribers([Head | Tail], Message) ->
-  io:fwrite("Sending msg to process: ~p \n", [Head]),
   Head ! {publish, Message},
   notify_subscribers(Tail, Message).
   
