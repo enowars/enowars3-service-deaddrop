@@ -13,9 +13,13 @@ init(Req0=#{method := <<"PATCH">>}, State) ->
     end,
 
     % Respond depending on maybe arisen errors
-    Req = case append_topic(NewTopic) of 
-        {ok} -> cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
-        {error, ErrorMsg} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},[ErrorMsg],Req0)
+    FileName = "topics.txt",
+    Req = case check_duplicate_topic(FileName, NewTopic) of 
+        false -> 
+            create_message_save(NewTopic),
+            append_topic(FileName, NewTopic),
+            cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
+        true -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0)
     end,
     {ok, Req, State};
 
@@ -26,21 +30,27 @@ init(Req0, State) ->
     }, Req0),
     {ok, Req, State}.
 
+% Create file to save messages published to this topic
+create_message_save(Topic) ->
+    CleanTopic = string:trim(Topic, leading, "+- "),
+    FileName = CleanTopic ++ "_msg_save.txt",
+    case file:open(FileName, [write]) of
+        {ok, Fh} ->
+            file:write(Fh, "All messages sent on topic: " ++ CleanTopic ++ "\n"),
+            {ok};
+        {error, _} -> {error, "Error while creating message save."}
+    end.
+
 % Check for duplicates, format and write topic string to topics file.
-append_topic(Topic) ->
-    FileName = "topics.txt",
-    case check_duplicate_topic(FileName, Topic) of 
-        true -> {error, "Topic already exists."};
-        false ->
-            % Check if the topic is indicated as private, otherwise prepend a '+'
-            NewTopic = Topic ++ "\n",
-            % Write new Topic to topics file
-            case file:open(FileName, [append]) of 
-                {ok, Fh} -> 
-                    file:write(Fh, NewTopic),
-                    {ok};
-                {error, enoent} -> {error, "No topics created yet."}
-            end
+append_topic(FileName, Topic) ->
+    % Check if the topic is indicated as private, otherwise prepend a '+'
+    NewTopic = Topic ++ "\n",
+    % Write new Topic to topics file
+    case file:open(FileName, [append]) of 
+        {ok, Fh} -> 
+            file:write(Fh, NewTopic),
+            {ok};
+        {error, _} -> {error, "Error while saving new topic."}
     end.
 
 % XXX: Silence compiler warnings.
