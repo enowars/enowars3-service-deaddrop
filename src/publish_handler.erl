@@ -7,7 +7,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
     Reply = case cowboy_req:read_body(Req0) of 
         {ok, Data, _} -> 
             % Introduce error handling for unfinished messages
-            Message = binary_to_list(Data),
+            Message = string:trim(binary_to_list(Data)),
             io:fwrite("Got: ~p \n", [Data]),
             gen_server:call({global, subscriber_pool}, {"New MSG", Message});
         {_} -> 
