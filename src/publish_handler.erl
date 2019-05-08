@@ -6,10 +6,15 @@
 init(Req0=#{method := <<"POST">>}, State) ->
     Reply = case cowboy_req:read_body(Req0) of 
         {ok, Data, _} -> 
-            % Introduce error handling for unfinished messages
+            % TODO: Introduce error handling for unfinished messages
             Message = string:tokens(string:trim(binary_to_list(Data)), ":"),
             io:fwrite("Got: ~p \n", [Data]),
-            gen_server:call({global, subscriber_pool}, {"New MSG", hd(Message), hd(tl(Message))});
+            Topic = hd(Message),
+            Content = hd(tl(Message)),
+            % Trigger saving
+            gen_event:notify({global, file_handler}, {new, {Topic, Content}}),
+            % Trigger publish
+            gen_server:call({global, subscriber_pool}, {"New MSG", Topic, Content});
         {_} -> 
             io:fwrite("Got an error while parsing request body."),
             "Parsing Error."
