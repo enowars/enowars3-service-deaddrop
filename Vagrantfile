@@ -65,6 +65,6 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y erlang make git docker.io
+    apt-get install -y erlang make git docker.io docker-compose
   SHELL
 end
