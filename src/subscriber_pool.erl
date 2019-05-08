@@ -22,14 +22,13 @@ init([]) ->
 
 handle_call(Request, _From, State) ->
   io:fwrite("subscriber_pool received msg from call: ~p \n", [Request]),
-  {_Method, Message} = Request,
-  ParsedMessage = string:tokens(Message, ":"),
-  io:fwrite("ParsedMsg: ~p \n", [ParsedMessage]),
-  io:fwrite("ParsedState: ~p \n", [hd(State)]),
+  {_Method, Topic, Message} = Request,
+  io:fwrite("Rcvd Topic: ~p \n", [Topic]),
+  io:fwrite("Rcvd Message: ~p \n", [Message]),
   % State is a list of one dict. 
-  ResponseMsg = case dict:find(hd(ParsedMessage), hd(State)) of
+  ResponseMsg = case dict:find(Topic, hd(State)) of
     {ok, Value} -> 
-      case notify_subscribers(Value, tl(ParsedMessage)) of 
+      case notify_subscribers(Value, Message) of 
         done -> "Processed PUBLISH.";
         error -> "Error returned by notify_subscribers."
       end;

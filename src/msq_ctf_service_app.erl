@@ -5,9 +5,7 @@
 -export([stop/1]).
 
 
-start(_Type, _Args) ->
-    {ok, _} = gen_server:start_link({global, subscriber_pool}, subscriber_pool, [], []),
-    
+start(_Type, _Args) ->    
     Dispatch = cowboy_router:compile([
             {'_', [{"/publish", publish_handler, []},
             {"/subscribe", subscribe_handler, []},
