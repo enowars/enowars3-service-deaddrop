@@ -2,6 +2,8 @@
 
 This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
 
+Run `make docker-clean` to stop and destroy all Docker containers running on the system. Run `make docker-build` to build a new container called `msq`. Run `make docker-run` to start a Docker running the service. 
+
 ## Dependencies
 
 - Erlang 21

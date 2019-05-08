@@ -8,6 +8,16 @@ dep_cowboy_commit = 2.6.3
 BUILD_DEPS = reload_mk
 DEP_PLUGINS = cowboy, reload_mk
 
+docker-build:
+	docker build -t msq .
+
+docker-run:
+	docker run -dit --name msq -p 8080:8080 msq
+
+docker-clean:
+	docker stop $$(docker ps -a -q)
+	docker rm $$(docker ps -a -q)
+
 .PHONY: test
 test:
 	sh test/smoke-test
