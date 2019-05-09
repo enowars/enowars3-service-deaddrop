@@ -9,4 +9,4 @@ services:
     depends_on:
       - wasp-backend
     ports:
-      - 5001:80
+      - 8080:80

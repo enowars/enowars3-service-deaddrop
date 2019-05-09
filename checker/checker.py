@@ -9,7 +9,7 @@ session = requests.Session()
 
 class WaspChecker(BaseChecker):
 
-    port = 5000  # default port to send requests to.
+    port = 8080  # default port to send requests to.
 
 
     def putflag(self):
