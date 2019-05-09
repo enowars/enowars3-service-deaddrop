@@ -8,3 +8,4 @@ _rel/
 msq_ctf_service.d
 *.dump
 *.log
+*.core
