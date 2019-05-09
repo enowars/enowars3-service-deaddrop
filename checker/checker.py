@@ -83,7 +83,9 @@ class WaspChecker(BaseChecker):
         pass
 
     def havoc(self):
-        pass
+        response = self.http_get("/topics")
+        if response.text != "No topics created yet.":
+            raise BrokenServiceException("Unexpected reponse from the /topics endpoint: \"{}\"".format(response.text))
 
 
 app = WaspChecker.service
