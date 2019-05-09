@@ -1,7 +1,9 @@
-import requests
 import json
 import random
 import string
+
+import requests
+
 from enochecker import BaseChecker, BrokenServiceException, run
 
 session = requests.Session()
@@ -11,9 +13,10 @@ class WaspChecker(BaseChecker):
 
     port = 8080  # default port to send requests to.
 
-
     def putflag(self):
-        tag = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        tag = "".join(
+            random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+        )
         self.team_db[self.flag] = tag
 
         self.debug("Putting Flag...")
@@ -24,14 +27,14 @@ class WaspChecker(BaseChecker):
                 "date": self.flag,
                 "location": "Berlin",
                 "description": "tasty bee hive! #{}".format(tag),
-                "password": self.flag
+                "password": self.flag,
             }
         else:
             attack = {
                 "date": "whenever",
                 "location": self.flag,
                 "description": "tasty bee hive! #{}".format(tag),
-                "password": self.flag
+                "password": self.flag,
             }
 
         # /AddAttack
@@ -44,7 +47,11 @@ class WaspChecker(BaseChecker):
         try:
             tag = self.team_db[self.flag]
         except KeyError as ex:
-            raise BrokenServiceException("Inconsistent Database: Couldn't get tag for team/flag ({})".format(self.flag))
+            raise BrokenServiceException(
+                "Inconsistent Database: Couldn't get tag for team/flag ({})".format(
+                    self.flag
+                )
+            )
 
         r = self.http_get("/api/SearchAttacks", params={"needle": tag})
         self.info("Parsing search result")
@@ -52,12 +59,19 @@ class WaspChecker(BaseChecker):
             search_results = json.loads(r.text)
             id = search_results["matches"][0]["id"]
         except Exception as ex:
-            raise BrokenServiceException("Invalid JSON Response: {} ({})".format(r.text, ex))
+            raise BrokenServiceException(
+                "Invalid JSON Response: {} ({})".format(r.text, ex)
+            )
 
         self.info("Found attack (id={})".format(id))
         self.info("Fetching attack: {}".format({"id": id, "password": self.flag}))
 
-        r = self.http_get("/api/GetAttack", params={"id": id, "password": self.flag}, timeout=5, verify=False)
+        r = self.http_get(
+            "/api/GetAttack",
+            params={"id": id, "password": self.flag},
+            timeout=5,
+            verify=False,
+        )
         self.info("Parsing GetAttack result")
         try:
             attack_results = json.loads(r.text)
@@ -68,13 +82,18 @@ class WaspChecker(BaseChecker):
             flag_field = "attackDate" if self.flag_idx % 2 == 0 else "location"
             if attack_results["attack"][flag_field] != self.flag:
                 raise BrokenServiceException(
-                    "Incorrect flag in date field (searched for {} in {} - {})".format(self.flag, attack_results,
-                                                                                       flag_field))
+                    "Incorrect flag in date field (searched for {} in {} - {})".format(
+                        self.flag, attack_results, flag_field
+                    )
+                )
         except Exception as ex:
             if isinstance(ex, BrokenServiceException):
                 raise
             raise BrokenServiceException(
-                "Error parsing json: {}. {} (expected: {})".format(attack_results, ex, self.flag))
+                "Error parsing json: {}. {} (expected: {})".format(
+                    attack_results, ex, self.flag
+                )
+            )
 
     def putnoise(self):
         pass
@@ -85,7 +104,11 @@ class WaspChecker(BaseChecker):
     def havoc(self):
         response = self.http_get("/topics")
         if response.text != "No topics created yet.":
-            raise BrokenServiceException("Unexpected reponse from the /topics endpoint: \"{}\"".format(response.text))
+            raise BrokenServiceException(
+                'Unexpected reponse from the /topics endpoint: "{}"'.format(
+                    response.text
+                )
+            )
 
 
 app = WaspChecker.service
