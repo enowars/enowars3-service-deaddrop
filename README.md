@@ -12,7 +12,7 @@ Run `make docker-clean` to stop and destroy all Docker containers running on the
 
 - Erlang 21
 
-### Testing
+### Testing with shell scripts
 
 Dependencies:
 
@@ -24,6 +24,17 @@ Running tests:
 ```sh
 make rel
 make test
+```
+
+### Testing with Docker and checker
+
+```sh
+# Start the service listening at localhost:8080
+make docker-clean docker-build docker-run
+
+# Install checker dependencies
+pip install git+https://github.com/domenukk/enochecker
+python3 checker/checker.py run havoc
 ```
 
 ### Notes
