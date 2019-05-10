@@ -9,36 +9,56 @@ from enochecker import BaseChecker, BrokenServiceException, run
 session = requests.Session()
 
 
-class WaspChecker(BaseChecker):
+# /publish
+# * POST
+# * Headers -- Content-type: application/x-www-form-urlencoded
+# * Payload: `Topic 1:message_string`
+# * Sends call to event handler `file_handler` to save received msg to file
+#   `Topic 1_msg_save.txt`
+PUBLISH_ENDPOINT = "/publish"
+# /subscribe
+# * Upgrades to Websocket automatically
+# * When connected use `SUBSCRIBE: topicname` to subscribe to topics
+# * Use `REPLAY: topicname` to receive all messages sent to Topic `topicname`
+SUBSCRIBE_ENDPOINT = "/subscribe"
+# /topics
+# * GET
+TOPICS_ENDPOINT = "/topics"
+# `/add_topic`
+# * PATCH
+# * Headers -- Content-type: application/x-www-form-urlencdoed
+# * Payload:
+#     * `- topicname` for private topics
+#     * `+ topicname` or `topicname` for public topics
+# * Creates file `topicname_msg_save.txt`. The file is used to store
+#   messages sent to this topic
+ADD_TOPIC_ENDPOINT = "/add_topic"
 
+
+def get_random_string(length: int = 10) -> str:
+    return "".join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(length)
+    )
+
+
+class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
     def putflag(self):
-        tag = "".join(
-            random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
-        )
+        tag = get_random_string()
         self.team_db[self.flag] = tag
 
-        self.debug("Putting Flag...")
-        # / because why not
-        self.http_get("/")
-        if self.flag_idx % 2 == 0:
-            attack = {
-                "date": self.flag,
-                "location": "Berlin",
-                "description": "tasty bee hive! #{}".format(tag),
-                "password": self.flag,
-            }
-        else:
-            attack = {
-                "date": "whenever",
-                "location": self.flag,
-                "description": "tasty bee hive! #{}".format(tag),
-                "password": self.flag,
-            }
-
-        # /AddAttack
-        self.http_post("/api/AddAttack", data=attack)
+        self.debug("Putting flag...")
+        # XXX: Should we use tag or self.flag here?
+        data = "- {}".format(tag)
+        headers = {"Content-type": "application/x-www-form-urlencdoed"}
+        response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data, headers=headers)
+        # XXX: Is checking for 200 enough?
+        if response.status_code != 200:
+            # TODO: Improve the error message.
+            raise BrokenServiceException(
+                "Broken service: could not put a flag ({})".format(self.flag)
+            )
         self.debug("Flag {} up with tag: {}.".format(self.flag, tag))
 
     def getflag(self):
@@ -111,6 +131,6 @@ class WaspChecker(BaseChecker):
             )
 
 
-app = WaspChecker.service
+app = MessageQueueChecker.service
 if __name__ == "__main__":
-    run(WaspChecker)
+    run(MessageQueueChecker)
