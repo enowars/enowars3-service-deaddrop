@@ -8,7 +8,7 @@ WORKDIR /buildroot
 # Copy our Erlang test application
 COPY . .
 
-RUN apk add --no-cache --update make
+RUN apk add --no-cache --update make git curl
 RUN make rel
 
 # Build stage 1
