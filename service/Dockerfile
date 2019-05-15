@@ -6,7 +6,11 @@ RUN mkdir -p /buildroot
 WORKDIR /buildroot
 
 # Copy our Erlang test application
-COPY . .
+COPY src src
+COPY Makefile Makefile
+COPY erlang.mk erlang.mk
+COPY relx.config relx.config
+COPY config config
 
 RUN apk add --no-cache --update make git curl
 RUN make rel
