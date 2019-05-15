@@ -15,8 +15,8 @@ docker-run:
 	docker run -dit --name msq -p 8080:8080 msq
 
 docker-clean:
-	docker stop $$(docker ps -a -q)
-	docker rm $$(docker ps -a -q)
+	docker ps -a -q | xargs --no-run-if-empty docker stop
+	docker ps -a -q | xargs --no-run-if-empty docker rm
 
 .PHONY: test
 test:
