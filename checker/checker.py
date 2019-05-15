@@ -46,19 +46,18 @@ class MessageQueueChecker(BaseChecker):
 
     def putflag(self):
         tag = get_random_string()
-        self.team_db[self.flag] = tag
+        self.team_db[sha256ify(self.flag)] = self.flag
 
         self.debug("Putting flag...")
-        # XXX: Should we use tag or self.flag here?
-        data = "- {}".format(tag)
-        response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data, headers=headers)
+        data = "+ {}".format(self.flag)
+        response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data)
         # XXX: Is checking for 200 enough?
         if response.status_code != 200:
             # TODO: Improve the error message.
             raise BrokenServiceException(
-                "Broken service: could not put a flag ({})".format(tag)
+                "Broken service: could not put a flag ({})".format(self.flag)
             )
-        self.debug("Flag {} has been put.".format(tag))
+        self.debug("Flag put ({})".format(self.flag))
 
     def getflag(self):
         self.http_get("/")
