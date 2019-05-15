@@ -38,6 +38,10 @@ Alternatively:
 
 Run `docker-compose up -d` to start the service and `docker-compose down` to stop it.
 
+#### Debugging
+
+-	Run `docker attach service_queue_1` in a second terminal to gather crash reports from the Erlang app (for example due to an invalid HTTP request being received).
+
 ### Notes
 
 -	Listening port: 8080
