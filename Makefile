@@ -22,4 +22,13 @@ docker-clean:
 test:
 	sh test/smoke-test
 
+.PHONY: do-clean
+ultra-clean:
+	find . -name '*.log' -delete
+	find . -name '*.core' -delete
+	${MAKE} clean
+	${MAKE} distclean
+	rm -rf -- .data
+	rm -rf -- checker/.data
+
 include erlang.mk
