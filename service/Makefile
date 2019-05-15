@@ -8,28 +8,13 @@ dep_cowboy_commit = 2.6.3
 BUILD_DEPS = reload_mk
 DEP_PLUGINS = cowboy, reload_mk
 
-.PHONY: docker-build
-docker-build:
-	docker build -t msq .
+.PHONY: up
+up:
+	docker-compose up -d
 
-.PHONY: docker-run
-docker-run:
-	docker run -dit --name msq -p 8080:8080 msq
-
-.PHONY: docker-clean
-docker-clean:
-	docker ps -a -q | xargs --no-run-if-empty docker stop
-	docker ps -a -q | xargs --no-run-if-empty docker rm
-
-.PHONY: docker-up
-docker-up:
-	${MAKE} docker-clean
-	${MAKE} docker-build
-	${MAKE} docker-run
-
-.PHONY: test
-test:
-	sh test/smoke-test
+.PHONY: down
+down:
+	docker-compose down
 
 .PHONY: do-clean
 ultra-clean:

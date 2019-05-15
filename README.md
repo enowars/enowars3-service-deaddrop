@@ -6,8 +6,6 @@ General description
 
 This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
 
-Run `make docker-clean` to stop and destroy all Docker containers running on the system. Run `make docker-build` to build a new container called `msq`. Run `make docker-run` to start a Docker running the service.
-
 Service
 -------
 
@@ -33,11 +31,14 @@ make test
 
 ```sh
 # Start the service listening at localhost:8080
-make docker-clean docker-build docker-run
+make -C ./service up
 
 # Install checker dependencies
 pip install git+https://github.com/domenukk/enochecker
+
 python3 checker/checker.py run havoc
+
+make -C ./service down
 ```
 
 Alternatively:
