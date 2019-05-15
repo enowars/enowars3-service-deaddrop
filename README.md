@@ -102,7 +102,6 @@ Other processes
 -	A message triggers a flag to be published to a "flag" topic. Fixable by removing the flag from the triggered message. The trigger-message can be crafted by understanding some random algorithm within the source.
 -	Some kind of path traversal when re-sending messages?
 -	Overflowing the log files?
--	\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
 Other notes
 -----------
