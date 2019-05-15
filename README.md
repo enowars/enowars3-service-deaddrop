@@ -20,13 +20,6 @@ Dependencies:
 -	cURL
 -	[websocat](https://github.com/vi/websocat)
 
-Running tests:
-
-```sh
-make rel
-make test
-```
-
 ### Testing with Docker and checker
 
 ```sh
