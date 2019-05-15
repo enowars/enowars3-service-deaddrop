@@ -51,7 +51,6 @@ class MessageQueueChecker(BaseChecker):
         self.debug("Putting flag...")
         # XXX: Should we use tag or self.flag here?
         data = "- {}".format(tag)
-        headers = {"Content-type": "application/x-www-form-urlencoded"}
         response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data, headers=headers)
         # XXX: Is checking for 200 enough?
         if response.status_code != 200:
