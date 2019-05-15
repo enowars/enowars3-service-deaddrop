@@ -15,11 +15,12 @@ init(Req0=#{method := <<"PATCH">>}, State) ->
     % Respond depending on maybe arisen errors
     FileName = "topics.txt",
     Req = case check_duplicate_topic(FileName, NewTopic) of 
-        false -> 
+        {ok, false} -> 
             create_message_save(NewTopic),
             append_topic(FileName, NewTopic),
             cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
-        true -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0)
+        {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0);
+        {error, ErrMsg} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},[io:format("Error: ~p \n", [ErrMsg])],Req0)
     end,
     {ok, Req, State};
 
@@ -62,13 +63,26 @@ code_change(_OldVersion, Library, _Extra) -> {ok, Library}.
 
 check_duplicate_topic(FileName, Topic) ->
     % Check for duplicates
-    case file:read_file(FileName) of 
-        {ok, Binary} -> 
-            String = binary_to_list(Binary),
-            Topics = string:tokens(String, "\n"),
-            case lists:member(Topic, Topics) of 
-                true -> true;
-                false -> false
+    Tmp = case filelib:is_regular(FileName) of
+        true -> {ok};
+        false -> 
+            case file:open(FileName, [write]) of
+                {ok, _} -> {ok};
+                {error, eacces} -> {error, "Error while creating topics.txt"};
+                {error, _} -> {error, "Unknown error while creating topics.txt"}
+            end
+    end,
+    case Tmp of 
+        {ok} -> 
+            case file:read_file(FileName) of 
+            {ok, Binary} -> 
+                String = binary_to_list(Binary),
+                Topics = string:tokens(String, "\n"),
+                case lists:member(Topic, Topics) of 
+                    true -> {ok, true};
+                    false -> {ok, false}
+                end;
+            {error, enoent} -> {error, "No topics.txt"}
             end;
-        {error, enoent} -> {error, "No topics created yet."}
+        {error, ErrMsg} -> {error, ErrMsg}
     end.
