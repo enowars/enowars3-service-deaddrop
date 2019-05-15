@@ -37,6 +37,10 @@ pip install git+https://github.com/domenukk/enochecker
 python3 checker/checker.py run havoc
 ```
 
+Alternatively:
+
+Run `docker-compose up -d` to start the service and `docker-compose down` to stop it.
+
 ### Notes
 
 - Listening port: 8080
