@@ -10,7 +10,7 @@ DEP_PLUGINS = cowboy, reload_mk
 
 .PHONY: up
 up:
-	docker-compose up -d
+	docker-compose up --build -d
 
 .PHONY: down
 down:
