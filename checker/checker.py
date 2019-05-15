@@ -56,9 +56,9 @@ class MessageQueueChecker(BaseChecker):
         if response.status_code != 200:
             # TODO: Improve the error message.
             raise BrokenServiceException(
-                "Broken service: could not put a flag ({})".format(self.flag)
+                "Broken service: could not put a flag ({})".format(tag)
             )
-        self.debug("Flag {} up with tag: {}.".format(self.flag, tag))
+        self.debug("Flag {} has been put.".format(tag))
 
     def getflag(self):
         self.http_get("/")
