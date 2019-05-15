@@ -35,12 +35,6 @@ TOPICS_ENDPOINT = "/topics"
 ADD_TOPIC_ENDPOINT = "/add_topic"
 
 
-def get_random_string(length: int = 10) -> str:
-    return "".join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(length)
-    )
-
-
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
