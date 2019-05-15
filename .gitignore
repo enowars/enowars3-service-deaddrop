@@ -9,3 +9,4 @@ msq_ctf_service.d
 *.dump
 *.log
 *.core
+.data
