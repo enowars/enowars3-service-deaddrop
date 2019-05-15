@@ -6,6 +6,8 @@ test:
 	cd -- "${SERVICE_DIR}" && ${MAKE} down
 	cd -- "${SERVICE_DIR}" && ${MAKE} up
 
+	sleep 1
+
 	${CHECKER_CMD} run havoc
 	${CHECKER_CMD} run putflag
 
