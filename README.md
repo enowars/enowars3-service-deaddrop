@@ -41,6 +41,18 @@ python3 checker/checker.py run havoc
 
 - Listening port: 8080
 
+#### Erlang Relevant Folders in /service
+
+These are needed for the `make run` to succeed:
+
+  * `_rel`: Binaries created by erlang.mk
+  * `.erlang.mk`: Created by erlang.mk
+  * `config`: Created when initializing project with cowboy
+  * `deps`: Dependencies created by erlang.mk
+  * `ebin`: Erlang bytecode
+  * `src`: Sourcecode
+  * `test`: Tests
+
 #### Endpoints
 
   - `/publish` 
