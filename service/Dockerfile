@@ -12,7 +12,7 @@ COPY config config
 RUN apk add --no-cache --update make git
 RUN make deps
 
-# Build stage 0
+# Build stage 1
 FROM erlang:alpine
 
 RUN mkdir -p /buildroot
