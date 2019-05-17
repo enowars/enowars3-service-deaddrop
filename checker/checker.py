@@ -59,23 +59,21 @@ class MessageQueueChecker(BaseChecker):
 
     def putflag(self):
         self.debug("Putting flag...")
-        data = "+ {}".format(self.flag)
+        data = f"+ {self.flag}"
         response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data)
         # XXX: Is checking for 200 enough?
         if response.status_code != 200:
             # TODO: Improve the error message.
             raise BrokenServiceException(
-                "Broken service: could not put a flag ({})".format(self.flag)
+                f"Broken service: could not put a flag ({self.flag})"
             )
-        self.debug("Flag put ({})".format(self.flag))
+        self.debug(f"Flag put ({self.flag})")
 
     def getflag(self):
         response = self.replay(self.flag)
         if response == "Unknown Topic.":
             raise BrokenServiceException(
-                "Broken service: the topic with the flag ({}) is unknown to the service".format(
-                    self.flag
-                )
+                f"Broken service: the topic with the flag ({self.flag}) is unknown to the service"
             )
 
     def putnoise(self):
@@ -88,9 +86,7 @@ class MessageQueueChecker(BaseChecker):
         response = self.http_get("/topics")
         if response.text != "No topics created yet.":
             raise BrokenServiceException(
-                'Unexpected reponse from the /topics endpoint: "{}"'.format(
-                    response.text
-                )
+                f'Unexpected reponse from the /topics endpoint: "{response.text}"'
             )
 
 
