@@ -14,11 +14,10 @@ init(Req0=#{method := <<"PATCH">>}, State) ->
 
     Req = case string:find(NewTopic, "\n") of 
         nomatch -> 
-            FileName = "topics.txt",
             case check_duplicate_topic(NewTopic) of 
                 {ok, false} -> 
                     create_message_save(NewTopic),
-                    append_topic(FileName, NewTopic),
+                    gen_event:call({global, file_handler}, file_handler, {new_topic, NewTopic}),
                     cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
                 % {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0);
                 {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Bad Request."],Req0);
@@ -40,20 +39,6 @@ init(Req0, State) ->
 create_message_save(Topic) ->
     CleanTopic = string:trim(Topic, leading, "+- "),
     gen_event:call({global, file_handler}, file_handler, {create_save, CleanTopic}).
-
-% Check for duplicates, format and write topic string to topics file.
-append_topic(FileName, Topic) ->
-    % Check if the topic is indicated as private, otherwise prepend a '+'
-    NewTopic = Topic ++ "\n",
-    % Write new Topic to topics file
-    case file:open(FileName, [append]) of 
-        {ok, Fh} -> 
-            file:write(Fh, NewTopic),
-            {ok};
-        {error, _} -> {error, "Error while saving new topic."}
-    end.
-
-
 
 check_duplicate_topic(Topic) ->
     % Check for duplicates
