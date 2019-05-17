@@ -40,6 +40,23 @@ ADD_TOPIC_ENDPOINT = "/add_topic"
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
+    # Send a replay request for the given topic to the subscribe endpoint.
+    def replay(self, topic: str) -> None:
+        async def request(topic: str):
+            async with websockets.connect(
+                f"ws://{self.address}:{self.port}{SUBSCRIBE_ENDPOINT}"
+            ) as websocket:
+                # Ignore the greeting message.
+                await websocket.recv()
+
+                # Request to replay the topic with the flag.
+                await websocket.send(f"REPLAY: {topic}")
+
+                # Receive all the messages relateed to the requested topic.
+                return await websocket.recv()
+
+        return asyncio.get_event_loop().run_until_complete(request(topic))
+
     def putflag(self):
         self.debug("Putting flag...")
         data = "+ {}".format(self.flag)
@@ -53,26 +70,13 @@ class MessageQueueChecker(BaseChecker):
         self.debug("Flag put ({})".format(self.flag))
 
     def getflag(self):
-        async def hello():
-            async with websockets.connect(
-                f"ws://{self.address}:{self.port}{SUBSCRIBE_ENDPOINT}"
-            ) as websocket:
-                # Ignore the greeting message.
-                await websocket.recv()
-
-                # Request to replay the topic with the flag.
-                await websocket.send(f"REPLAY: {self.flag}")
-
-                # Receive all the messages relateed to the requested topic.
-                response = await websocket.recv()
-                if response == "Unknown Topic.":
-                    raise BrokenServiceException(
-                        "Broken service: the topic with the flag ({}) is unknown to the service".format(
-                            self.flag
-                        )
-                    )
-
-        asyncio.get_event_loop().run_until_complete(hello())
+        response = self.replay(self.flag)
+        if response == "Unknown Topic.":
+            raise BrokenServiceException(
+                "Broken service: the topic with the flag ({}) is unknown to the service".format(
+                    self.flag
+                )
+            )
 
     def putnoise(self):
         pass
