@@ -11,7 +11,6 @@ Endpoints
 
 -	`/publish`
 	-	POST
-	-	Headers -- Content-type: application/x-www-form-urlencoded
 	-	Payload: `Topic 1:message_string`
 	-	Sends call to event handler `file_handler` to save received msg to file `Topic 1_msg_save.txt`
 -	`/subscribe`
@@ -22,7 +21,6 @@ Endpoints
 	-	GET
 -	`/add_topic`
 	-	PATCH
-	-	Headers -- Content-type: application/x-www-form-urlencdoed
 	-	Payload:
 		-	`- topicname` for private topics
 		-	`+ topicname` or `topicname` for public topics
