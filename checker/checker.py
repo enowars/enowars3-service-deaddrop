@@ -36,6 +36,8 @@ TOPICS_ENDPOINT = "/topics"
 #   messages sent to this topic
 ADD_TOPIC_ENDPOINT = "/add_topic"
 
+SUBSCRIBE_ENDPOINT_GREETING = "Heyhey from WS Handler.."
+
 
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
@@ -47,7 +49,12 @@ class MessageQueueChecker(BaseChecker):
                 f"ws://{self.address}:{self.port}{SUBSCRIBE_ENDPOINT}"
             ) as websocket:
                 # Ignore the greeting message.
-                await websocket.recv()
+                greeting = await websocket.recv()
+
+                if greeting != SUBSCRIBE_ENDPOINT_GREETING:
+                    raise BrokenServiceException(
+                        f'Broken service: the subscribe endpoint greeted us with "{greeting}"'
+                    )
 
                 # Request to replay the topic with the flag.
                 await websocket.send(f"REPLAY: {topic}")
