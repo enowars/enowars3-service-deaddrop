@@ -41,7 +41,7 @@ class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
     # Send a replay request for the given topic to the subscribe endpoint.
-    def replay(self, topic: str) -> None:
+    def replay(self, topic: str) -> str:
         async def request(topic: str):
             async with websockets.connect(
                 f"ws://{self.address}:{self.port}{SUBSCRIBE_ENDPOINT}"
