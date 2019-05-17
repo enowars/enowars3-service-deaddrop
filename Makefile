@@ -3,8 +3,8 @@ CHECKER_CMD=	python3 ./checker/checker.py
 
 .PHONY: test
 test:
-	cd -- "${SERVICE_DIR}" && ${MAKE} down
-	cd -- "${SERVICE_DIR}" && ${MAKE} up
+	${MAKE} -C "${service}" down
+	${MAKE} -C "${service}" up
 
 	sleep 1
 
