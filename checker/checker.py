@@ -1,10 +1,12 @@
+import asyncio
 import json
 import random
 import string
 
 import requests
 
-from enochecker import BaseChecker, BrokenServiceException, run
+import websockets
+from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 
 session = requests.Session()
 
