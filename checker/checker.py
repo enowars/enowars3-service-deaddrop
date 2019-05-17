@@ -57,23 +57,26 @@ class MessageQueueChecker(BaseChecker):
 
         return asyncio.get_event_loop().run_until_complete(request(topic))
 
+    def add_private_topic(self, topic):
+        return self.http("PATCH", ADD_TOPIC_ENDPOINT, data="- {topic}")
+
     def putflag(self):
-        self.debug("Putting flag...")
-        data = f"+ {self.flag}"
-        response = self.http("PATCH", ADD_TOPIC_ENDPOINT, data=data)
-        # XXX: Is checking for 200 enough?
+        topic = sha256ify(self.flag)
+        self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
+        response = self.add_private_topic(topic)
         if response.status_code != 200:
             # TODO: Improve the error message.
             raise BrokenServiceException(
-                f"Broken service: could not put a flag ({self.flag})"
+                f'Broken service: could not put flag "{self.flag}" to topic "{topic}"'
             )
         self.debug(f"Flag put ({self.flag})")
 
     def getflag(self):
-        response = self.replay(self.flag)
+        topic = sha256ify(self.flag)
+        response = self.replay(topic)
         if response == "Unknown Topic.":
             raise BrokenServiceException(
-                f"Broken service: the topic with the flag ({self.flag}) is unknown to the service"
+                f'Broken service: topic "{topic}" with flag "{self.flag}" is unknown to the service'
             )
 
     def putnoise(self):
