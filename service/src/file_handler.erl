@@ -40,8 +40,10 @@ terminate(_Args, Fd) ->
 
 create_message_save(Topic) ->
     FileName = io_lib:format("~s_msg_save.txt", [Topic]),
-    case file:open(FileName, [write]) of
+    Path = get_priv_path(FileName),
+    case file:open(Path, [write]) of
         {ok, Fh} ->
+            io:fwrite("Writing to path: ~p \n", [Path]),
             file:write(Fh, io_lib:format("All messages sent on topic: ~s\n", [Topic])),
             {ok};
         {error, _} -> {error, "Error while creating message save."}
@@ -49,19 +51,24 @@ create_message_save(Topic) ->
 
 save_message(Topic, Message) ->
     FileName = Topic ++ "_msg_save.txt",
-    case file:open(FileName, [append]) of 
+    Path = get_priv_path(FileName),
+    case file:open(Path, [append]) of 
         {ok, Fh} -> file:write(Fh, "** " ++ Message ++ "\n");
         {error, _} -> io:fwrite("Error while saving message")
     end.
 
 retrieve_messages(Topic) ->
     FileName = Topic ++ "_msg_save.txt",
-    {ok, Binary} = file:read_file(FileName),
+    Path = get_priv_path(FileName),
+    {ok, Binary} = file:read_file(Path),
     binary_to_list(Binary).
 
 retrieve_topics() ->
     FileName = "topics.txt",
-    {ok, Binary} = file:read_file(FileName),
+    Path = get_priv_path(FileName),
+    io:fwrite("Reading from path: ~p \n", [Path]),
+    {ok, Binary} = file:read_file(Path),
+    io:fwrite("Got: ~p \n", [binary_to_list(Binary)]),
     string:tokens(binary_to_list(Binary), "\n").
 
 append_topic(Topic) ->
@@ -69,9 +76,19 @@ append_topic(Topic) ->
     % Check if the topic is indicated as private, otherwise prepend a '+'
     NewTopic = Topic ++ "\n",
     % Write new Topic to topics file
-    case file:open(FileName, [append]) of 
+    Path = get_priv_path(FileName),
+    case file:open(Path, [append]) of 
         {ok, Fh} -> 
             file:write(Fh, NewTopic),
             {ok};
         {error, _} -> {error, "Error while saving new topic."}
     end.
+
+get_priv_path(FileName) ->
+    Path = case code:priv_dir(msq_ctf_service) of
+        {error, bad_name} ->
+            "priv";
+        PrivDir ->
+            PrivDir
+    end,
+    filename:join([Path, FileName]).
