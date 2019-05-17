@@ -28,7 +28,7 @@ RUN make rel
 # Build stage 2
 FROM alpine
 
-RUN apk add --no-cache --update make ncurses-libs
+RUN apk add --no-cache --update ncurses-libs
 
 # Install the released application
 COPY --from=1 /buildroot/_rel /srv
