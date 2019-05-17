@@ -41,7 +41,6 @@ class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
     def putflag(self):
-        tag = get_random_string()
         self.team_db[sha256ify(self.flag)] = self.flag
 
         self.debug("Putting flag...")
