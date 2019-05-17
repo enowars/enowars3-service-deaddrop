@@ -37,12 +37,6 @@ websocket_handle(Frame = {text, MessageBin}, State) ->
 websocket_handle(_Frame, State) ->
     {ok, State}.
 
-websocket_info({publish, Text}, State) ->
-    {reply, {text, Text}, State};
-
-websocket_info(_Info, State) ->
-    {ok, State}.
-
 subscribe(Topic) ->
     gen_server:cast({global, subscriber_pool}, {"New SUB", self(), Topic}).
 
@@ -71,3 +65,11 @@ search_topic(List, Topic) ->
         _ -> 
             search_topic(tl(List), Topic)
     end.
+
+
+websocket_info({publish, Text}, State) ->
+    {reply, {text, Text}, State};
+
+websocket_info(_Info, State) ->
+    {ok, State}.
+

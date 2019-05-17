@@ -12,15 +12,20 @@ init(Req0=#{method := <<"PATCH">>}, State) ->
         {error, _} -> io:fwrite("Error while parsing sent topic")
     end,
 
-    % Respond depending on maybe arisen errors
-    FileName = "topics.txt",
-    Req = case check_duplicate_topic(FileName, NewTopic) of 
-        {ok, false} -> 
-            create_message_save(NewTopic),
-            append_topic(FileName, NewTopic),
-            cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
-        {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0);
-        {error, ErrMsg} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},[io:format("Error: ~p \n", [ErrMsg])],Req0)
+    Req = case string:find(NewTopic, "\n") of 
+        nomatch -> 
+            FileName = "topics.txt",
+            case check_duplicate_topic(FileName, NewTopic) of 
+                {ok, false} -> 
+                    create_message_save(NewTopic),
+                    append_topic(FileName, NewTopic),
+                    cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>},<<"">>,Req0);
+                % {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Topic already exists."],Req0);
+                {ok, true} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Bad Request."],Req0);
+                {error, _} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Bad Request."],Req0)
+                % {error, ErrMsg} -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},[io:format("Error: ~p \n", [ErrMsg])],Req0)
+            end;
+        _ -> cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>},["Bad Request."],Req0)
     end,
     {ok, Req, State};
 
@@ -54,11 +59,6 @@ append_topic(FileName, Topic) ->
         {error, _} -> {error, "Error while saving new topic."}
     end.
 
-% XXX: Silence compiler warnings.
-handle_call(_Msg, _Caller, State) -> {noreply, State}.
-handle_info(_Msg, Library) -> {noreply, Library}.
-terminate(_Reason, _Library, _State) -> ok.
-code_change(_OldVersion, Library, _Extra) -> {ok, Library}.
 
 
 check_duplicate_topic(FileName, Topic) ->
@@ -86,3 +86,10 @@ check_duplicate_topic(FileName, Topic) ->
             end;
         {error, ErrMsg} -> {error, ErrMsg}
     end.
+
+
+% XXX: Silence compiler warnings.
+handle_call(_Msg, _Caller, State) -> {noreply, State}.
+handle_info(_Msg, Library) -> {noreply, Library}.
+terminate(_Reason, _Library, _State) -> ok.
+code_change(_OldVersion, Library, _Extra) -> {ok, Library}.
