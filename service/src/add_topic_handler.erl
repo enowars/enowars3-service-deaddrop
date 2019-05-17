@@ -15,7 +15,7 @@ init(Req0=#{method := <<"PATCH">>}, State) ->
     Req = case string:find(NewTopic, "\n") of 
         nomatch -> 
             FileName = "topics.txt",
-            case check_duplicate_topic(FileName, NewTopic) of 
+            case check_duplicate_topic(NewTopic) of 
                 {ok, false} -> 
                     create_message_save(NewTopic),
                     append_topic(FileName, NewTopic),
@@ -55,32 +55,13 @@ append_topic(FileName, Topic) ->
 
 
 
-check_duplicate_topic(FileName, Topic) ->
+check_duplicate_topic(Topic) ->
     % Check for duplicates
-    Tmp = case filelib:is_regular(FileName) of
-        true -> {ok};
-        false -> 
-            case file:open(FileName, [write]) of
-                {ok, _} -> {ok};
-                {error, eacces} -> {error, "Error while creating topics.txt"};
-                {error, _} -> {error, "Unknown error while creating topics.txt"}
-            end
-    end,
-    case Tmp of 
-        {ok} -> 
-            case file:read_file(FileName) of 
-            {ok, Binary} -> 
-                String = binary_to_list(Binary),
-                Topics = string:tokens(String, "\n"),
-                case lists:member(Topic, Topics) of 
-                    true -> {ok, true};
-                    false -> {ok, false}
-                end;
-            {error, enoent} -> {error, "No topics.txt"}
-            end;
-        {error, ErrMsg} -> {error, ErrMsg}
+    Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
+    case lists:member(Topic, Topics) of 
+        true -> {ok, true};
+        false -> {ok, false}
     end.
-
 
 % XXX: Silence compiler warnings.
 handle_call(_Msg, _Caller, State) -> {noreply, State}.
