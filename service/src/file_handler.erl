@@ -28,7 +28,11 @@ handle_call(Event, State) ->
             end;
         {topics} ->
             Topics = retrieve_topics(),
-            {ok, Topics, State}
+            {ok, Topics, State};
+        {new_topic, Topic} ->
+            append_topic(Topic),
+            {ok, ok, State}
+
     end.
 
 terminate(_Args, Fd) ->
@@ -59,3 +63,15 @@ retrieve_topics() ->
     FileName = "topics.txt",
     {ok, Binary} = file:read_file(FileName),
     string:tokens(binary_to_list(Binary), "\n").
+
+append_topic(Topic) ->
+    FileName = "topics.txt",
+    % Check if the topic is indicated as private, otherwise prepend a '+'
+    NewTopic = Topic ++ "\n",
+    % Write new Topic to topics file
+    case file:open(FileName, [append]) of 
+        {ok, Fh} -> 
+            file:write(Fh, NewTopic),
+            {ok};
+        {error, _} -> {error, "Error while saving new topic."}
+    end.
