@@ -55,7 +55,13 @@ class MessageQueueChecker(BaseChecker):
         self.debug("Flag put ({})".format(self.flag))
 
     def getflag(self):
-        pass
+        response = self.http_get(
+            SUBSCRIBE_ENDPOINT, data="REPLAY: {}".format(self.flag)
+        )
+        if response.status_code != 200:
+            raise BrokenServiceException(
+                "Broken service: could not get a flag ({})".format(self.flag)
+            )
 
     def putnoise(self):
         pass
