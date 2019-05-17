@@ -75,15 +75,17 @@ class MessageQueueChecker(BaseChecker):
             raise BrokenServiceException(
                 f'Broken service: could not put flag "{self.flag}" to topic "{topic}"'
             )
-        self.debug(f"Flag put ({self.flag})")
+        self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
         topic = sha256ify(self.flag)
+        self.debug(f'Getting flag "{self.flag}" from topic "{topic}"...')
         response = self.replay(topic)
         if response == "Unknown Topic.":
             raise BrokenServiceException(
                 f'Broken service: topic "{topic}" with flag "{self.flag}" is unknown to the service'
             )
+        self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
         pass
