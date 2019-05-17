@@ -65,7 +65,7 @@ class MessageQueueChecker(BaseChecker):
 
                 if greeting != self.greeting:
                     raise BrokenServiceException(
-                        f'Broken service: the subscribe endpoint greeted us with "{greeting}"'
+                        f"Broken service: /subscribe endpoint greeted us with: {greeting}"
                     )
 
                 # Request to replay the topic with the flag.
@@ -109,7 +109,7 @@ class MessageQueueChecker(BaseChecker):
         response = self.http_get("/topics")
         if response.text != "No topics created yet.":
             raise BrokenServiceException(
-                f'Unexpected reponse from the /topics endpoint: "{response.text}"'
+                f"Unexpected reponse from the /topics endpoint: {response.text}"
             )
 
 
