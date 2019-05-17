@@ -46,16 +46,8 @@ replay(Topic) ->
     Result.
 
 check_topic(Topic) ->
-    case file:read_file("topics.txt") of 
-        {ok, Binary} -> 
-            % Transform read binary into list of strings, one item per line.
-            String = binary_to_list(Binary),
-            List = string:tokens(String, "\n"),
-            search_topic(List, Topic);
-        {error, _} -> 
-            io:fwrite("Error while reading topics file."),
-            false
-    end.
+    Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
+    search_topic(Topics, Topic).
 
 search_topic(List, Topic) ->
     % Remove preceeding special character from file line.
