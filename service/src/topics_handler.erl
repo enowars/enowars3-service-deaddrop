@@ -4,17 +4,12 @@
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-    Topics = case file:read_file("topics.txt") of 
-        {ok, Content} -> 
-            String = binary_to_list(Content),
-            List = string:tokens(String, "\n"),
-            lists:map(fun remove_private_topics/1, List);
-        {error, enoent} -> "No topics created yet."
-    end,
+    Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
+    CleanedTopics = lists:map(fun remove_private_topics/1, Topics),
 
 	Req = cowboy_req:reply(200,
         #{<<"content-type">> => <<"text/plain">>},
-        [Topics],
+        [CleanedTopics],
         Req0),
     {ok, Req, State};
 
