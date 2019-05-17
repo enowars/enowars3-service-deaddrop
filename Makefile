@@ -11,7 +11,7 @@ test:
 	${CHECKER_CMD} run havoc
 	${CHECKER_CMD} run putflag
 
-	cd -- "${SERVICE_DIR}" && ${MAKE} down
+	${MAKE} -C "${SERVICE_DIR}" down
 
 .PHONY: ultra-clean
 ultra-clean:
