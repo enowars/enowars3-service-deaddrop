@@ -65,7 +65,6 @@ class MessageQueueChecker(BaseChecker):
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
         response = self.add_private_topic(topic)
         if response.status_code != 200:
-            # TODO: Improve the error message.
             raise BrokenServiceException(
                 f'Broken service: could not put flag "{self.flag}" to topic "{topic}"'
             )
