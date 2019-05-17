@@ -16,13 +16,30 @@ handle_event(Event, State) ->
     end,
     {ok, State}.
 
-handle_call({replay, Topic}, State) -> 
-    io:fwrite("Rcv call in file_handler \n"),
-    Messages = retrieve_messages(Topic),
-    {ok, State, Messages}.
+handle_call(Event, State) -> 
+    case Event of 
+        {replay, Topic} ->
+            io:fwrite("Rcv call in file_handler \n"),
+            Messages = retrieve_messages(Topic),
+            {ok, Messages, State};
+        {create_save, {Topic}} -> 
+            case create_message_save(Topic) of 
+                {ok} -> {ok, ok, State};
+                {error, Msg} -> {ok, Msg, State}
+            end
+    end.
 
 terminate(_Args, Fd) ->
     file:close(Fd).
+
+create_message_save(Topic) ->
+    FileName = io:format("~s", [Topic]),
+    case file:open(FileName, [write]) of
+        {ok, Fh} ->
+            file:write(Fh, io:format("All messages sent on topic: ~s\n", [Topic])),
+            {ok};
+        {error, _} -> {error, "Error while creating message save."}
+    end.
 
 save_message(Topic, Message) ->
     FileName = Topic ++ "_msg_save.txt",

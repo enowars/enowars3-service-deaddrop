@@ -39,13 +39,7 @@ init(Req0, State) ->
 % Create file to save messages published to this topic
 create_message_save(Topic) ->
     CleanTopic = string:trim(Topic, leading, "+- "),
-    FileName = CleanTopic ++ "_msg_save.txt",
-    case file:open(FileName, [write]) of
-        {ok, Fh} ->
-            file:write(Fh, "All messages sent on topic: " ++ CleanTopic ++ "\n"),
-            {ok};
-        {error, _} -> {error, "Error while creating message save."}
-    end.
+    gen_event:call({global, file_handler}, file_handler, {create_save, CleanTopic}).
 
 % Check for duplicates, format and write topic string to topics file.
 append_topic(FileName, Topic) ->
