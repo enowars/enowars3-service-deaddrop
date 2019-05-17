@@ -53,13 +53,26 @@ class MessageQueueChecker(BaseChecker):
         self.debug("Flag put ({})".format(self.flag))
 
     def getflag(self):
-        response = self.http_get(
-            SUBSCRIBE_ENDPOINT, data="REPLAY: {}".format(self.flag)
-        )
-        if response.status_code != 200:
-            raise BrokenServiceException(
-                "Broken service: could not get a flag ({})".format(self.flag)
-            )
+        async def hello():
+            async with websockets.connect(
+                f"ws://{self.address}:{self.port}{SUBSCRIBE_ENDPOINT}"
+            ) as websocket:
+                # Ignore the greeting message.
+                await websocket.recv()
+
+                # Request to replay the topic with the flag.
+                await websocket.send(f"REPLAY: {self.flag}")
+
+                # Receive all the messages relateed to the requested topic.
+                response = await websocket.recv()
+                if response == "Unknown Topic.":
+                    raise BrokenServiceException(
+                        "Broken service: the topic with the flag ({}) is unknown to the service".format(
+                            self.flag
+                        )
+                    )
+
+        asyncio.get_event_loop().run_until_complete(hello())
 
     def putnoise(self):
         pass
