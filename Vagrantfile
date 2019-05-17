@@ -10,5 +10,7 @@ Vagrant.configure("2") do |config|
     apt-get update
     apt-get install -y erlang make git docker.io docker-compose python3-pip
     pip3 install git+https://github.com/domenukk/enochecker
+
+    apt-get install -y httpie
   SHELL
 end
