@@ -12,6 +12,18 @@ init([]) ->
 	% Using this would be prefered but we don't know where to register a callback with this process within app startup.
 	% FileHandler = #{id => file_handler, start => {gen_event, start_link, [{global, file_handler}]}},
 	{ok, Pid} = gen_event:start_link({global, file_handler}),
+
+	FileName = "topics.txt",
+	_ = case filelib:is_regular(FileName) of
+        true -> null;
+        false -> 
+            case file:open(FileName, [write]) of
+                {ok, _} -> null;
+                {error, eacces} -> io:fwrite("Error while creating topics.txt");
+                {error, _} -> io:fwrite("Unknown error while creating topics.txt")
+            end
+    end,
+
 	gen_event:add_sup_handler(Pid, file_handler, []),
 
 	% {ok, {{one_for_one, 1, 5}, [SubPool, FileHandler]}}.
