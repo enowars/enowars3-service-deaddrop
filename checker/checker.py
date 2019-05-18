@@ -63,7 +63,7 @@ class MessageQueueChecker(BaseChecker):
 
                 if greeting != self.greeting:
                     raise BrokenServiceException(
-                        f"Broken service: /subscribe endpoint greeted us with: {greeting}"
+                        f"Endpoint "/subscribe" greeted us with: {greeting}"
                     )
 
                 # Request to replay the topic with the flag.
@@ -92,7 +92,7 @@ class MessageQueueChecker(BaseChecker):
             response = self.add_public_topic(topic)
         if response.status_code != 200:
             raise BrokenServiceException(
-                f'Broken service: could not add topic "{topic}"'
+                f'Could not add topic "{topic}"'
             )
         publish_response = self.publish(topic, message)
         if (
@@ -100,7 +100,7 @@ class MessageQueueChecker(BaseChecker):
             or publish_response.text is "Error returned by notify_subscribers."
         ):
             raise BrokenServiceException(
-                f'Broken service: could not publish message "{message}" to topic "{topic}"'
+                f'Could not publish message "{message}" to topic "{topic}"'
             )
 
         self.debug(f'Message "{message}" published')
@@ -110,11 +110,11 @@ class MessageQueueChecker(BaseChecker):
         response = self.replay(topic)
         if response == "Unknown Topic.":
             raise BrokenServiceException(
-                f'Broken service: message "{message}" not found in topic "{topic}"'
+                f'Message "{message}" not found in topic "{topic}"'
             )
         if response.find(message) == -1:
             raise BrokenServiceException(
-                f'Broken service: message "{message}" missing from replay of topic "{topic}"'
+                f'Message "{message}" missing from replay of topic "{topic}"'
             )
 
         self.debug(f'Message "{message}" got')
