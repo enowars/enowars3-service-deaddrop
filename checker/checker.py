@@ -90,11 +90,11 @@ class MessageQueueChecker(BaseChecker):
                 f'Broken service: could add topic "{topic}" base on flag "{self.flag}"'
             )
         publish_response = self.publish(topic, self.flag)
-        if response.status_code != 200 or response.text is "Error returned by notify_subscribers.":
+        if publish_response.status_code != 200 or publish_response.text is "Error returned by notify_subscribers.":
             raise BrokenServiceException(
                 f'Broken service: could not publish flag "{self.flag}" to its topic'
             )
-            
+
         self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
