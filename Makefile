@@ -3,10 +3,20 @@ CHECKER_CMD=	python3 ./checker/checker.py
 
 EXAMPLE_FLAG=	ENO6QMAAAeETi6mGPeJgd83rWfM2U3bcg8KZLsICovytDw=
 
+# Service up.
+.PHONY: su
+su:
+	${MAKE} -C ${SERVICE_DIR} up
+
+# Service down.
+.PHONY: sd
+sd:
+	${MAKE} -C "${SERVICE_DIR}" down
+
 .PHONY: test
 test:
-	${MAKE} -C "${SERVICE_DIR}" down
-	${MAKE} -C "${SERVICE_DIR}" up
+	${MAKE} sd
+	${MAKE} su
 
 	sleep 1
 
@@ -14,7 +24,7 @@ test:
 	${CHECKER_CMD} run putflag --flag "${EXAMPLE_FLAG}"
 	${CHECKER_CMD} run getflag --flag "${EXAMPLE_FLAG}"
 
-	${MAKE} -C "${SERVICE_DIR}" down
+	${MAKE} sd
 
 .PHONY: ultra-clean
 ultra-clean:
