@@ -10,3 +10,4 @@ msq_ctf_service.d
 *.log
 *.core
 .data
+.env
