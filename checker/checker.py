@@ -77,13 +77,21 @@ class MessageQueueChecker(BaseChecker):
     def add_private_topic(self, topic):
         return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")
 
+    def publish(self, topic, message):
+        return self.http_post(self.publish_endpoint, data=f"{topic}:{message}")
+
     def putflag(self):
         topic = sha256ify(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
         response = self.add_private_topic(topic)
         if response.status_code != 200:
             raise BrokenServiceException(
-                f'Broken service: could not put flag "{self.flag}" to topic "{topic}"'
+                f'Broken service: could add topic "{topic}" base on flag "{self.flag}"'
+            )
+        publish_response = self.publish(topic, self.flag)
+        if publish_response.status_code != 200:
+            raise BrokenServiceException(
+                f'Broken service: could not publish flag "{self.flag}" to its topic'
             )
         self.debug(f'Flag "{self.flag}" put')
 
@@ -95,6 +103,11 @@ class MessageQueueChecker(BaseChecker):
             raise BrokenServiceException(
                 f'Broken service: topic "{topic}" with flag "{self.flag}" is unknown to the service'
             )
+        if response.find(self.flag) == -1:
+            raise BrokenServiceException(
+                f'Broken service: flag "{self.flag}" missing in replay of topic "{topic}"'
+            )
+
         self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
