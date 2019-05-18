@@ -77,39 +77,58 @@ class MessageQueueChecker(BaseChecker):
     def add_private_topic(self, topic):
         return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")
 
+    def add_public_topic(self, topic):
+        return self.http("PATCH", self.add_topic_endpoint, data=f"+ {topic}")
+
     def publish(self, topic, message):
         return self.http_post(self.publish_endpoint, data=f"{topic}:{message}")
+
+    def must_publish_to_new_topic(self, topic, message, private=True):
+        if private:
+            self.debug(f'Publishing message "{message}" to private topic "{topic}"')
+            response = self.add_private_topic(topic)
+        else:
+            self.debug(f'Publishing message "{message}" to public topic "{topic}"')
+            response = self.add_public_topic(topic)
+        if response.status_code != 200:
+            raise BrokenServiceException(
+                f'Broken service: could not add topic "{topic}"'
+            )
+        publish_response = self.publish(topic, message)
+        if (
+            publish_response.status_code != 200
+            or publish_response.text is "Error returned by notify_subscribers."
+        ):
+            raise BrokenServiceException(
+                f'Broken service: could not publish message "{message}" to topic "{topic}"'
+            )
+
+        self.debug(f'Message "{message}" published')
+
+    def must_get_message(self, topic, message):
+        self.debug(f'Getting message "{message}" from topic "{topic}"...')
+        response = self.replay(topic)
+        if response == "Unknown Topic.":
+            raise BrokenServiceException(
+                f'Broken service: message "{message}" not found in topic "{topic}"'
+            )
+        if response.find(message) == -1:
+            raise BrokenServiceException(
+                f'Broken service: message "{message}" missing from replay of topic "{topic}"'
+            )
+
+        self.debug(f'Message "{message}" got')
 
     def putflag(self):
         topic = sha256ify(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
-        # Create topic to which current flag is published
-        response = self.add_private_topic(topic)
-        if response.status_code != 200:
-            raise BrokenServiceException(
-                f'Broken service: could add topic "{topic}" base on flag "{self.flag}"'
-            )
-        publish_response = self.publish(topic, self.flag)
-        if publish_response.status_code != 200 or publish_response.text is "Error returned by notify_subscribers.":
-            raise BrokenServiceException(
-                f'Broken service: could not publish flag "{self.flag}" to its topic'
-            )
-
+        self.must_publish_to_new_topic(topic, self.flag)
         self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
         topic = sha256ify(self.flag)
         self.debug(f'Getting flag "{self.flag}" from topic "{topic}"...')
-        response = self.replay(topic)
-        if response == "Unknown Topic.":
-            raise BrokenServiceException(
-                f'Broken service: topic "{topic}" with flag "{self.flag}" is unknown to the service'
-            )
-        if response.find(self.flag) == -1:
-            raise BrokenServiceException(
-                f'Broken service: flag "{self.flag}" missing in replay of topic "{topic}"'
-            )
-
+        self.must_get_message(topic, self.flag)
         self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
