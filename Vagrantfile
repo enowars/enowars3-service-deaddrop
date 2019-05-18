@@ -12,5 +12,7 @@ Vagrant.configure("2") do |config|
     pip3 install git+https://github.com/domenukk/enochecker
 
     apt-get install -y httpie
+
+    sed -i -e 's|^#\(force_color_prompt\)|\1|' /root/.bashrc
   SHELL
 end
