@@ -63,7 +63,7 @@ class MessageQueueChecker(BaseChecker):
 
                 if greeting != self.greeting:
                     raise BrokenServiceException(
-                        f"Endpoint "/subscribe" greeted us with: {greeting}"
+                        f'Endpoint "/subscribe" greeted us with: {greeting}'
                     )
 
                 # Request to replay the topic with the flag.
@@ -91,9 +91,7 @@ class MessageQueueChecker(BaseChecker):
             self.debug(f'Publishing message "{message}" to public topic "{topic}"')
             response = self.add_public_topic(topic)
         if response.status_code != 200:
-            raise BrokenServiceException(
-                f'Could not add topic "{topic}"'
-            )
+            raise BrokenServiceException(f'Could not add topic "{topic}"')
         publish_response = self.publish(topic, message)
         if (
             publish_response.status_code != 200
@@ -132,10 +130,16 @@ class MessageQueueChecker(BaseChecker):
         self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
-        pass
+        topic = sha256ify(self.noise)
+        self.debug(f'Putting noise "{self.noise}" to topic "{topic}"...')
+        self.must_publish_to_new_topic(topic, self.noise)
+        self.debug(f'Noise "{self.noise}" put')
 
     def getnoise(self):
-        pass
+        topic = sha256ify(self.noise)
+        self.debug(f'Getting noise "{self.noise}" from topic "{topic}"...')
+        self.must_get_message(topic, self.noise)
+        self.debug(f'Noise "{self.noise}" got')
 
     def havoc(self):
         response = self.http_get("/topics")

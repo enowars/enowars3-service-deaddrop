@@ -1,7 +1,8 @@
 SERVICE_DIR=	./service
 CHECKER_CMD=	python3 ./checker/checker.py
 
-EXAMPLE_FLAG=	ENO6QMAAAeETi6mGPeJgd83rWfM2U3bcg8KZLsICovytDw=
+FLAG=	ENO6QMAAAeETi6mGPeJgd83rWfM2U3bcg8KZLsICovytDw=
+NOISE=	=This=Is=Neither=A=Flag=Nor=A=Love=Song===31337
 
 # Service up.
 .PHONY: su
@@ -21,8 +22,10 @@ test:
 	sleep 1
 
 	${CHECKER_CMD} run havoc
-	${CHECKER_CMD} run putflag --flag "${EXAMPLE_FLAG}"
-	${CHECKER_CMD} run getflag --flag "${EXAMPLE_FLAG}"
+	${CHECKER_CMD} run putflag --flag "${FLAG}"
+	${CHECKER_CMD} run getflag --flag "${FLAG}"
+	${CHECKER_CMD} run putnoise --flag "${NOISE}"
+	${CHECKER_CMD} run getnoise --flag "${NOISE}"
 
 	${MAKE} sd
 
