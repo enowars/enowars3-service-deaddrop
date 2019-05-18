@@ -12,7 +12,7 @@ session = requests.Session()
 
 
 class MessageQueueChecker(BaseChecker):
-    port = 8080  # default port to send requests to.
+    port = 9090  # default port to send requests to.
 
     @property
     def greeting(self):
@@ -105,7 +105,7 @@ class MessageQueueChecker(BaseChecker):
 
     def havoc(self):
         response = self.http_get("/topics")
-        if response.text != "No topics created yet.":
+        if response.text != "Bad Request.":
             raise BrokenServiceException(
                 f"Unexpected reponse from the /topics endpoint: {response.text}"
             )

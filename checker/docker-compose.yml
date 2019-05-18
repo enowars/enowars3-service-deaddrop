@@ -1,12 +1,12 @@
 version: '2.3'
 services:
-  wasp-backend:
+  checker:
     build: .
-  wasp-frontend:
+  checker-nginx:
     image: nginx:1.13-alpine
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - wasp-backend
+      - checker
     ports:
       - 8080:80
