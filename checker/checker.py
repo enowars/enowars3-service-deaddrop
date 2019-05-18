@@ -83,16 +83,18 @@ class MessageQueueChecker(BaseChecker):
     def putflag(self):
         topic = sha256ify(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
+        # Create topic to which current flag is published
         response = self.add_private_topic(topic)
         if response.status_code != 200:
             raise BrokenServiceException(
                 f'Broken service: could add topic "{topic}" base on flag "{self.flag}"'
             )
         publish_response = self.publish(topic, self.flag)
-        if publish_response.status_code != 200:
+        if response.status_code != 200 or response.text is "Error returned by notify_subscribers.":
             raise BrokenServiceException(
                 f'Broken service: could not publish flag "{self.flag}" to its topic'
             )
+            
         self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
