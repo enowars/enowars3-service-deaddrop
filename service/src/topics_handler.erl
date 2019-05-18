@@ -5,12 +5,14 @@
 
 init(Req0=#{method := <<"GET">>}, State) ->
     Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
-    CleanedTopics = lists:map(fun remove_private_topics/1, Topics),
+    Req = case catch hd(Topics) of 
+        {'EXIT', {badarg, _}} -> 
+            cowboy_req:reply(400, #{<<"content-type">> => <<"text/plain">>}, ["Bad Request."], Req0);
+        _ -> 
+            CleanedTopics = lists:map(fun remove_private_topics/1, Topics),
+            cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>}, [CleanedTopics], Req0)
+    end,
 
-	Req = cowboy_req:reply(200,
-        #{<<"content-type">> => <<"text/plain">>},
-        [CleanedTopics],
-        Req0),
     {ok, Req, State};
 
 init(Req0, State) ->
