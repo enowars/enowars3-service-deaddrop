@@ -4,6 +4,18 @@
 -export([init/1, handle_event/2, handle_call/2, terminate/2]).
 
 init(_) ->
+    FileName = "topics.txt",
+	PrivPath = get_priv_path(FileName),
+    case filelib:ensure_dir(PrivPath) of 
+        ok -> null;
+        {error, Reason} -> io:fwrite("could not find/create path to topics.txt: ~p \n", [Reason])
+    end,
+    case file:open(PrivPath, [write]) of
+        {ok, _} -> 
+                null;
+        {error, Error} -> io:fwrite("Got error while creating topics.txt: ~p \n", [Error])
+    end,
+    
     io:fwrite("Initialised file_handler"),
     {ok, self()}.
 
