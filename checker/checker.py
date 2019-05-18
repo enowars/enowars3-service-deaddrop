@@ -75,7 +75,7 @@ class MessageQueueChecker(BaseChecker):
         return asyncio.get_event_loop().run_until_complete(request(topic))
 
     def add_private_topic(self, topic):
-        return self.http("PATCH", self.add_topic_endpoint, data="- {topic}")
+        return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")
 
     def putflag(self):
         topic = sha256ify(self.flag)
