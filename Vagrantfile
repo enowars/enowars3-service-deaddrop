@@ -15,6 +15,6 @@ Vagrant.configure("2") do |config|
     wget https://github.com/vi/websocat/releases/download/v1.4.0/websocat_1.4.0_ssl1.1_amd64.deb
     gdebi --non-interactive websocat_1.4.0_ssl1.1_amd64.deb
 
-    sed -i -e 's|^#\(force_color_prompt\)|\1|' /root/.bashrc
+    sed -i -e 's/^#force_color_prompt/force_color_prompt/' /root/.bashrc
   SHELL
 end
