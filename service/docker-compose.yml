@@ -4,16 +4,18 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile
+    ports:
+    - "9090:8080"
     tty: true
-    networks:
-      test_network:
-        ipv6_address: fd00:420::3
+#     networks:
+#       test_network:
+#         ipv6_address: fd00:420::3
 
-networks:
-  test_network:
-    enable_ipv6: true
-    ipam:
-      driver: default
-      config:
-        - subnet: fd00:420::/64
-          gateway: fd00:420::1
+# networks:
+#   test_network:
+#     enable_ipv6: true
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: fd00:420::/64
+#           gateway: fd00:420::1
