@@ -15,11 +15,23 @@ websocket_init(State) ->
 websocket_handle(Frame = {text, MessageBin}, State) ->
     io:fwrite("ws handler received frame: ~p \n", [Frame]),
     List = string:tokens(binary_to_list(MessageBin), ":"),
-    Method = hd(List),
-    Content = hd(tl(List)),
-    % Remove whitespaces and newlines
-    Topic = string:trim(Content),
-    Reply = case check_topic(Topic) of
+    Reply = case length(tl(List)) of 
+        N when N == 1 ->
+            Method = hd(List),
+            Content = hd(tl(List)),
+            % Remove whitespaces and newlines
+            Topic = string:trim(Content),
+            create_reply(Method, Topic);
+        _ ->
+            "Bad Request."
+    end,
+    {reply, {text, list_to_binary(Reply)}, State};
+
+websocket_handle(_Frame, State) ->
+    {ok, State}.
+
+create_reply(Method, Topic) ->
+    case check_topic(Topic) of
         true -> 
             case Method of 
                 "SUBSCRIBE" -> 
@@ -31,11 +43,7 @@ websocket_handle(Frame = {text, MessageBin}, State) ->
                 _ -> "Invalid Method."
             end;
         false -> "Unknown Topic."
-    end,
-    {reply, {text, list_to_binary(Reply)}, State};
-
-websocket_handle(_Frame, State) ->
-    {ok, State}.
+    end.
 
 subscribe(Topic) ->
     gen_server:cast({global, subscriber_pool}, {"New SUB", self(), Topic}).
