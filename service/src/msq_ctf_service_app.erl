@@ -15,7 +15,7 @@ start(_Type, _Args) ->
     ]),
     % TODO: Lower the amount of allowed connections?
     {ok, _} = cowboy:start_clear(api_listener,
-        [{port, 8080}],
+        [{port, 8080}, inet6],
         #{env => #{dispatch => Dispatch}}
     ),
     cowboy:set_env(api_listener, dispatch, Dispatch),
