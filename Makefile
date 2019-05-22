@@ -72,8 +72,8 @@ release-push:
 
 .PHONY: do-release-push
 do-release-push:
-	git commit --message="Release the service (based on $(git log -n 1 --pretty=format:"%H"))"
-	git push --set-upstream origin ${RELEASE_BRANCH}
+	echo git commit --message="Release the service (based on $$(git log -n 1 --pretty=format:"%H"))"
+	echo git push --set-upstream origin ${RELEASE_BRANCH}
 
 .PHONY: release-clean
 release-clean:
