@@ -6,6 +6,15 @@ General description
 
 This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
 
+Releasing
+---------
+
+### Building, tagging, and pushing an new chcker image to the registry
+
+```sh
+make -C checker publish
+```
+
 Service
 -------
 
