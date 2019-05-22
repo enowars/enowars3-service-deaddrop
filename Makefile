@@ -62,7 +62,6 @@ do-release-update:
 .PHONY: release-qa
 release-qa:
 	sed -i 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml
-	mv ${SERVICE_DIR}/docker-compose.yml.tmp ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 	${MAKE} -C ${SERVICE_DIR} down
 	git co -- ${SERVICE_DIR}/docker-compose.yml
