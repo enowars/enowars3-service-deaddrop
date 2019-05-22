@@ -29,6 +29,39 @@ test:
 
 	${MAKE} sd
 
+RELEASE_BRANCH=	release
+REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-messagequeue.git
+RELEASE_DIR=	./new-release
+.PHONY: update-release-branch
+update-release-branch:
+	git clone ${REPOSITORY_URL} ${RELEASE_DIR}
+	cd -- ${RELEASE_DIR}
+	git checkout -b ${RELEASE_BRANCH}
+	git rm -r .
+
+	# Docker files
+	git checkout master ${SERVICE_DIR}/Dockerfile
+	git checkout master ${SERVICE_DIR}/docker-compose.yml
+	# Build infrastructure.
+	git checkout master ${SERVICE_DIR}/Makefile
+	git checkout master ${SERVICE_DIR}/config
+	git checkout master ${SERVICE_DIR}/erlang.mk
+	git checkout master ${SERVICE_DIR}/relx.config
+	# Source of the service
+	git checkout master ${SERVICE_DIR}/src
+
+	# QA
+	${MAKE} -C ${SERVICE_DIR} up
+	${MAKE} -C ${SERVICE_DIR} down
+
+	# Release
+	git commit --message="Release the service"
+	git push --set-upstream origin ${RELEASE_BRANCH}
+
+	# Clean up
+	cd ..
+	rm -rf -- ${RELEASE_DIR}
+
 .PHONY: ultra-clean
 ultra-clean:
 	find . -name '*.log' -delete
@@ -36,3 +69,4 @@ ultra-clean:
 	${MAKE} -C service distclean
 	rm -rf -- .data
 	rm -rf -- checker/.data
+	rm -rf -- ${RELEASE_DIR}
