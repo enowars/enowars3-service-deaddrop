@@ -64,7 +64,7 @@ release-qa:
 	sed -i 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 	${MAKE} -C ${SERVICE_DIR} down
-	git co -- ${SERVICE_DIR}/docker-compose.yml
+	git checkout -- ${SERVICE_DIR}/docker-compose.yml
 
 .PHONY: release-push
 release-push:
