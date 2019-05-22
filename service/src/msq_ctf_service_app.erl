@@ -5,13 +5,13 @@
 -export([stop/1]).
 
 
-start(_Type, _Args) ->    
+start(_Type, _Args) ->
     Dispatch = cowboy_router:compile([
             {'_', [{"/publish", publish_handler, []},
             {"/subscribe", subscribe_handler, []},
             {"/topics", topics_handler, []},
             {"/add_topic", add_topic_handler, []}
-        ]} 
+        ]}
     ]),
     % TODO: Lower the amount of allowed connections?
     {ok, _} = cowboy:start_clear(api_listener,
