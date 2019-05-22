@@ -48,7 +48,7 @@ do-release-update:
 
 	# Docker files
 	git checkout --force master service/Dockerfile
-	git checkout --force master service/docker-compose.yml.template
+	git checkout --force master service/docker-compose.yml
 	# Build infrastructure
 	git checkout --force master ${SERVICE_DIR}/Makefile
 	git checkout --force master ${SERVICE_DIR}/config
@@ -61,10 +61,11 @@ do-release-update:
 
 .PHONY: release-qa
 release-qa:
-	sed 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
+	sed -i 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml
+	mv ${SERVICE_DIR}/docker-compose.yml.tmp ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 	${MAKE} -C ${SERVICE_DIR} down
-	rm -f -- ${SERVICE_DIR}/docker-compose.yml
+	git co -- ${SERVICE_DIR}/docker-compose.yml
 
 .PHONY: release-push
 release-push:
