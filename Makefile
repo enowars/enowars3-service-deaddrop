@@ -68,11 +68,11 @@ release-qa:
 
 .PHONY: release-push
 release-push:
-	${MAKE} -C ${RELEASE_DIR} -f ${PWD}/Makefile do-release-push
+	${MAKE} MASTER_HASH="$$(git log -n 1 --pretty=format:"%H")" -C ${RELEASE_DIR} -f ${PWD}/Makefile do-release-push
 
 .PHONY: do-release-push
 do-release-push:
-	git commit --message="Release the service (based on $$(git log -n 1 --pretty=format:"%H"))"
+	git commit --message="Release the service (based on ${MASTER_HASH})"
 	git push --set-upstream origin ${RELEASE_BRANCH}
 
 .PHONY: release-clean
