@@ -11,3 +11,4 @@ msq_ctf_service.d
 *.core
 .data
 .env
+new-release
