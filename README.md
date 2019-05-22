@@ -15,6 +15,19 @@ Releasing
 make -C checker publish
 ```
 
+### Updating the release branch with the latest service code from master
+
+```sh
+make release-clone
+make release-update
+
+# Optionally, try to build and run the container.
+make release-qa
+
+make release-push
+make relase-clean
+```
+
 Service
 -------
 

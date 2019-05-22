@@ -32,34 +32,51 @@ test:
 RELEASE_BRANCH=	release
 REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-messagequeue.git
 RELEASE_DIR=	./new-release
-.PHONY: update-release-branch
-update-release-branch:
+
+.PHONY: release-clone
+release-clone:
 	git clone ${REPOSITORY_URL} ${RELEASE_DIR}
-	cd -- ${RELEASE_DIR}
-	git checkout -b ${RELEASE_BRANCH}
+
+.PHONY: release-update
+release-update:
+	${MAKE} -C ${RELEASE_DIR} -f ${PWD}/Makefile do-release-update
+
+.PHONY: do-release-update
+do-release-update:
+	git checkout ${RELEASE_BRANCH}
 	git rm -r .
 
 	# Docker files
-	git checkout master ${SERVICE_DIR}/Dockerfile
-	git checkout master ${SERVICE_DIR}/docker-compose.yml
-	# Build infrastructure.
-	git checkout master ${SERVICE_DIR}/Makefile
-	git checkout master ${SERVICE_DIR}/config
-	git checkout master ${SERVICE_DIR}/erlang.mk
-	git checkout master ${SERVICE_DIR}/relx.config
+	git checkout --force master service/Dockerfile
+	git checkout --force master service/docker-compose.yml.template
+	# Build infrastructure
+	git checkout --force master ${SERVICE_DIR}/Makefile
+	git checkout --force master ${SERVICE_DIR}/config
+	git checkout --force master ${SERVICE_DIR}/erlang.mk
+	git checkout --force master ${SERVICE_DIR}/relx.config
 	# Source of the service
-	git checkout master ${SERVICE_DIR}/src
+	git checkout --force master ${SERVICE_DIR}/src
 
-	# QA
+	git status
+
+.PHONY: release-qa
+release-qa:
+	sed 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 	${MAKE} -C ${SERVICE_DIR} down
+	rm -f -- ${SERVICE_DIR}/docker-compose.yml
 
-	# Release
+.PHONY: release-push
+release-push:
+	${MAKE} -C ${RELEASE_DIR} -f ${PWD}/Makefile do-release-push
+
+.PHONY: do-release-push
+do-release-push:
 	git commit --message="Release the service"
 	git push --set-upstream origin ${RELEASE_BRANCH}
 
-	# Clean up
-	cd ..
+.PHONY: release-clean
+release-clean:
 	rm -rf -- ${RELEASE_DIR}
 
 .PHONY: ultra-clean
