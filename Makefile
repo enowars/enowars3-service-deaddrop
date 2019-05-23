@@ -69,6 +69,7 @@ do-release-update:
 	git checkout --force master checker/requirements.txt
 	git checkout --force master checker/uwsgi.ini
 
+	env PAGER=cat git diff --staged
 	git status
 
 .PHONY: release-qa
