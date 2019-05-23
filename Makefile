@@ -59,6 +59,14 @@ do-release-update:
 	# Source of the service
 	git checkout --force master ${SERVICE_DIR}/src
 
+	# Checker ####################################################################
+	git checkout --force master checker/Dockerfile
+	git checkout --force master checker/checker.py
+	git checkout --force master checker/docker-compose.yml
+	git checkout --force master checker/nginx.conf
+	git checkout --force master checker/requirements.txt
+	git checkout --force master checker/uwsgi.ini
+
 	git status
 
 .PHONY: release-qa
