@@ -4,14 +4,16 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile
+    ports:
+    - "9090:8080"
     tty: true
     networks:
-      test_network:
+      leetnet:
         ipv6_address: fd00:1337:TEAMID:ba17::1
     restart: always
 
 networks:
-  test_network:
+  leetnet:
     enable_ipv6: true
     ipam:
       driver: default

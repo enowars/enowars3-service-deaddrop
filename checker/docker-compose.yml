@@ -1,10 +1,7 @@
-version: '2.1'
+version: '2.3'
 services:
-  mqchecker:
+  checker:
     build: .
-    networks:
-      checkernet:
-        ipv6_address: fd00:1337:0:cecc:5::2
   checker-nginx:
     image: nginx:1.13-alpine
     volumes:
@@ -13,10 +10,3 @@ services:
       - checker
     ports:
       - 8080:80
-    networks:
-      checkernet:
-        ipv6_address: fd00:1337:0:cecc:5::1
-
-networks:
-  checkernet:
-    external: true
