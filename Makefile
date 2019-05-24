@@ -16,6 +16,14 @@ su:
 sd:
 	${MAKE} -C "${SERVICE_DIR}" down
 
+.PHONY: test-run
+test-run:
+	${CHECKER_CMD} havoc
+	${CHECKER_CMD} putflag --flag "${FLAG}"
+	# ${CHECKER_CMD} getflag --flag "${FLAG}"
+	${CHECKER_CMD} putnoise --flag "${NOISE}"
+	# ${CHECKER_CMD} getnoise --flag "${NOISE}"
+
 .PHONY: test
 test:
 	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
@@ -23,12 +31,7 @@ test:
 	${MAKE} su
 
 	sleep 1
-
-	${CHECKER_CMD} havoc
-	${CHECKER_CMD} putflag --flag "${FLAG}"
-	${CHECKER_CMD} getflag --flag "${FLAG}"
-	${CHECKER_CMD} putnoise --flag "${NOISE}"
-	${CHECKER_CMD} getnoise --flag "${NOISE}"
+	${MAKE} test-run
 
 	${MAKE} sd
 
