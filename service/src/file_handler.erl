@@ -51,9 +51,9 @@ terminate(_Args, Fd) ->
     file:close(Fd).
 
 create_message_save(Topic) ->
-    FileName = io_lib:format("~s_msg_save.txt", [Topic]),
+    FileName = io_lib:format("~s.txt", [Topic]),
     Path = get_priv_path(FileName),
-    case file:open(Path, [write]) of
+    case file:open(Path, [append]) of
         {ok, Fh} ->
             io:fwrite("Writing to path: ~p \n", [Path]),
             file:write(Fh, io_lib:format("All messages sent on topic: ~s\n", [Topic])),
@@ -62,7 +62,7 @@ create_message_save(Topic) ->
     end.
 
 save_message(Topic, Message) ->
-    FileName = Topic ++ "_msg_save.txt",
+    FileName = Topic ++ ".txt",
     Path = get_priv_path(FileName),
     case file:open(Path, [append]) of 
         {ok, Fh} -> file:write(Fh, "** " ++ Message ++ "\n");
@@ -70,7 +70,7 @@ save_message(Topic, Message) ->
     end.
 
 retrieve_messages(Topic) ->
-    FileName = Topic ++ "_msg_save.txt",
+    FileName = Topic ++ ".txt",
     Path = get_priv_path(FileName),
     {ok, Binary} = file:read_file(Path),
     binary_to_list(Binary).
