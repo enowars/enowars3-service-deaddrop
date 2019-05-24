@@ -143,9 +143,9 @@ class MessageQueueChecker(BaseChecker):
 
     def havoc(self):
         response = self.http_get("/topics")
-        if response.text != "":
+        if response.status_code != 200:
             raise BrokenServiceException(
-                f"Unexpected reponse from the /topics endpoint: {response.text}"
+                f"Unexpected status code from the /topics endpoint: {response.status_code}"
             )
 
 
