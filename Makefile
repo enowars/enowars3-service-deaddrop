@@ -74,6 +74,7 @@ do-release-update:
 
 .PHONY: release-qa
 release-qa:
+	git checkout ${RELEASE_BRANCH}
 	sed -i 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 	${MAKE} -C ${SERVICE_DIR} down
