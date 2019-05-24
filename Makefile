@@ -93,6 +93,11 @@ do-release-push:
 release-clean:
 	rm -rf -- ${RELEASE_DIR}
 
+.PHONY: sync-release-to-master
+sync-release-to-master:
+	git checkout master
+	git ls-tree -r origin/release --name-only | xargs -n 1 git checkout --force origin/release
+
 .PHONY: ultra-clean
 ultra-clean:
 	find . -name '*.log' -delete
