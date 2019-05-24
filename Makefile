@@ -16,6 +16,7 @@ sd:
 
 .PHONY: test
 test:
+	sed -i 's/TEAMID/eeee/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} sd
 	${MAKE} su
 
