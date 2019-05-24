@@ -12,7 +12,7 @@ session = requests.Session()
 
 
 class MessageQueueChecker(BaseChecker):
-    port = 9090  # default port to send requests to.
+    port = 8080  # default port to send requests to.
 
     @property
     def greeting(self):
