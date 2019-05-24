@@ -28,6 +28,12 @@ make release-push
 make relase-clean
 ```
 
+### Integrating release branch hotfixes back to master
+
+```sh
+make sync-release-to-master
+```
+
 Service
 -------
 
