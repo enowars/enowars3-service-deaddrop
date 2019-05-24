@@ -97,6 +97,7 @@ release-clean:
 sync-release-to-master:
 	git checkout master
 	git ls-tree -r origin/release --name-only | xargs -n 1 git checkout --force origin/release
+	env PAGER=cat git diff --staged
 
 .PHONY: ultra-clean
 ultra-clean:
