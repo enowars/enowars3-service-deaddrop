@@ -1,5 +1,7 @@
 SERVICE_DIR=	./service
-CHECKER_CMD=	python3 ./checker/checker.py
+TEST_TEAMID=	eeee
+TEST_SERVICE_IP_ADDRESS=	[fd00:1337:${TEST_TEAMID}:ba17::1]
+CHECKER_CMD=	python3 ./checker/checker.py run -a "${TEST_SERVICE_IP_ADDRESS}"
 
 FLAG=	ENO6QMAAAeETi6mGPeJgd83rWfM2U3bcg8KZLsICovytDw=
 NOISE=	=This=Is=Neither=A=Flag=Nor=A=Love=Song===31337
@@ -22,11 +24,11 @@ test:
 
 	sleep 1
 
-	${CHECKER_CMD} run havoc
-	${CHECKER_CMD} run putflag --flag "${FLAG}"
-	${CHECKER_CMD} run getflag --flag "${FLAG}"
-	${CHECKER_CMD} run putnoise --flag "${NOISE}"
-	${CHECKER_CMD} run getnoise --flag "${NOISE}"
+	${CHECKER_CMD} havoc
+	${CHECKER_CMD} putflag --flag "${FLAG}"
+	${CHECKER_CMD} getflag --flag "${FLAG}"
+	${CHECKER_CMD} putnoise --flag "${NOISE}"
+	${CHECKER_CMD} getnoise --flag "${NOISE}"
 
 	${MAKE} sd
 
