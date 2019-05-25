@@ -56,10 +56,7 @@ do-release-update:
 	# Service ####################################################################
 	# Docker files
 	git checkout --force master service/Dockerfile
-	git checkout --force master service/docker-compose.yml
-	mv service/docker-compose.yml service/docker-compose.yml.template
-	git rm service/docker-compose.yml
-	git add service/docker-compose.yml.template
+	git checkout --force master service/docker-compose.yml.template
 	# Build infrastructure
 	git checkout --force master ${SERVICE_DIR}/Makefile
 	git checkout --force master ${SERVICE_DIR}/config

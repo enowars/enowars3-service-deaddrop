@@ -12,3 +12,4 @@ msq_ctf_service.d
 .data
 .env
 new-release
+service/docker-compose.yml
