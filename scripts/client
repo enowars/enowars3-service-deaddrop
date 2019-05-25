@@ -1,0 +1,32 @@
+#! /bin/sh -
+
+address="[fd00:1337:eeee:ba17::1]:8080"
+
+case $1 in
+	"")
+		cat <<EOF
+Usage:
+./client a [-] topic
+./client r topic
+./client s topic
+./client t
+EOF
+		;;
+	a*)
+		shift
+		printf '%s\n' "$*" | http patch "$address/add_topic"
+		;;
+	r*)
+		printf 'REPLAY:%s\n' "$*" | websocat "ws://$address/subscribe"
+		;;
+	s*)
+		printf 'SUBSCRIBE: %s\n' "$*" | websocat "ws://$address/subscribe"
+		;;
+	t*)
+		http "$address/topics"
+		;;
+	*)
+		printf 'ERROR: unknown command: %s\n' "$*" >&2
+		exit 1
+		;;
+esac
