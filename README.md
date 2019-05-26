@@ -55,10 +55,11 @@ Development
 
 See [service/DEVELOPMENT.md](service/DEVELOPMENT.md) for service devlopment notes.
 
+See [Vagrantfile](Vagrantfile) to figure out what dependencies and provisioning are needed.
+
 ### Testing
 
 ```sh
-pip3 install -r checker/requirements.txt
 make test
 ```
 
