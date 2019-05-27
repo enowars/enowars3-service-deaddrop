@@ -39,3 +39,5 @@ EOF
 		exit 1
 		;;
 esac
+
+# vim: noexpandtab shiftwidth=8 softtabstop=8 tabstop=8
