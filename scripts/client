@@ -23,12 +23,15 @@ EOF
 		printf '%s:%s\n' "$topic" "$*" | http post "$address/publish"
 		;;
 	r*)
+		shift
 		printf 'REPLAY:%s\n' "$*" | websocat "ws://$address/subscribe"
 		;;
 	s*)
+		shift
 		printf 'SUBSCRIBE: %s\n' "$*" | websocat "ws://$address/subscribe"
 		;;
 	t*)
+		shift
 		http "$address/topics"
 		;;
 	*)
