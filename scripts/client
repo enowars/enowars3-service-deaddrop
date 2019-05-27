@@ -7,6 +7,7 @@ case $1 in
 		cat <<EOF
 Usage:
 ./client a [-] topic
+./client p topic message
 ./client r topic
 ./client s topic
 ./client t
@@ -15,6 +16,11 @@ EOF
 	a*)
 		shift
 		printf '%s\n' "$*" | http patch "$address/add_topic"
+		;;
+	p*)
+		shift
+		topic="$1"
+		printf '%s:%s\n' "$topic" "$*" | http post "$address/publish"
 		;;
 	r*)
 		printf 'REPLAY:%s\n' "$*" | websocat "ws://$address/subscribe"
