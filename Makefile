@@ -6,14 +6,17 @@ CHECKER_CMD=	python3 ./checker/checker.py run -a "${TEST_SERVICE_IP_ADDRESS}"
 FLAG=	ENO6QMAAAeETi6mGPeJgd83rWfM2U3bcg8KZLsICovytDw=
 NOISE=	=This=Is=Neither=A=Flag=Nor=A=Love=Song===31337
 
+${SERVICE_DIR}/docker-compose.yml: ${SERVICE_DIR}/docker-compose.yml.template
+	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
+
 # Service up.
 .PHONY: su
-su:
+su: ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C ${SERVICE_DIR} up
 
 # Service down.
 .PHONY: sd
-sd:
+sd: ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C "${SERVICE_DIR}" down
 
 .PHONY: test-run
