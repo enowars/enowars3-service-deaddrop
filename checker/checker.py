@@ -54,25 +54,25 @@ class MessageQueueChecker(BaseChecker):
 
     # Send a replay request for the given topic to the subscribe endpoint.
     def replay(self, topic: str) -> str:
-        with websocket.create_connection(
+        socket = websocket.create_connection(
             f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
-        ) as socket:
-            greeting = socket.recv()
-            if self.greeting != greeting:
-                raise BrokenServiceException(
-                    f'Endpoint "/subscribe" greeted us with: {greeting}'
-                )
-            # Request to replay the topic with the flag.
-            socket.send(f"REPLAY: {topic}")
+        )
+        greeting = socket.recv()
+        if self.greeting != greeting:
+            raise BrokenServiceException(
+                f'Endpoint "/subscribe" greeted us with: {greeting}'
+            )
+        # Request to replay the topic with the flag.
+        socket.send(f"REPLAY: {topic}")
 
-            # Receive all the messages related to the requested topic.
-            messages = socket.recv()
+        # Receive all the messages related to the requested topic.
+        messages = socket.recv()
 
-            # XXX: Is it alright to just close the socket here? Could it be
-            # that the socket is not closed if we abort earlier?
-            socket.close()
+        # XXX: Is it alright to just close the socket here? Could it be
+        # that the socket is not closed if we abort earlier?
+        socket.close()
 
-            return messages
+        return messages
 
     def add_private_topic(self, topic):
         return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")

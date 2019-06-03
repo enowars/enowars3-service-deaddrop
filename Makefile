@@ -23,9 +23,9 @@ sd: ${SERVICE_DIR}/docker-compose.yml
 test-run:
 	${CHECKER_CMD} havoc
 	${CHECKER_CMD} putflag --flag "${FLAG}"
-	# ${CHECKER_CMD} getflag --flag "${FLAG}"
+	${CHECKER_CMD} getflag --flag "${FLAG}"
 	${CHECKER_CMD} putnoise --flag "${NOISE}"
-	# ${CHECKER_CMD} getnoise --flag "${NOISE}"
+	${CHECKER_CMD} getnoise --flag "${NOISE}"
 	${CHECKER_CMD} havoc
 
 .PHONY: test
