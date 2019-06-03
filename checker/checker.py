@@ -111,13 +111,15 @@ class MessageQueueChecker(BaseChecker):
 
         self.debug(f'Message "{message}" published')
 
-    def must_get_message(self, topic, message):
-        self.debug(f'Getting message "{message}" from topic "{topic}"...')
+    def must_replay(self, topic):
+        self.debug(f'Replaying topic "{topic}"...')
         response = self.replay(topic)
         if response == "Unknown Topic.":
-            raise BrokenServiceException(
-                f'Message "{message}" not found in topic "{topic}"'
-            )
+            raise BrokenServiceException(f'Unable to replay topic "{topic}"')
+        return response
+
+    def must_get_message(self, topic, message):
+        response = self.must_replay(topic)
         if response.find(message) == -1:
             raise BrokenServiceException(
                 f'Message "{message}" missing from replay of topic "{topic}"'
