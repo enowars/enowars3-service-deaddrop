@@ -19,6 +19,8 @@ su: ${SERVICE_DIR}/docker-compose.yml
 sd: ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C "${SERVICE_DIR}" down
 
+TEST_DELAY=	2
+
 .PHONY: test-setup
 test-setup:
 	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
@@ -41,7 +43,7 @@ do-test-smoke:
 .PHONY: test-smoke
 test-smoke:
 	${MAKE} test-setup
-	sleep 1
+	sleep ${TEST_DELAY}
 	${MAKE} do-test-smoke
 	${MAKE} test-teardown
 
@@ -54,7 +56,7 @@ do-test-exploit:
 .PHONY: test-exploit
 test-exploit:
 	${MAKE} test-setup
-	sleep 1
+	sleep ${TEST_DELAY}
 	${MAKE} do-test-exploit
 	${MAKE} test-teardown
 
