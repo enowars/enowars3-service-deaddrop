@@ -1,5 +1,7 @@
 #! /bin/sh -
 
+set -u
+
 ip_address="[fd00:1337:eeee:ba17::1]"
 port="8080"
 address="${ip_address}:${port}"
@@ -18,7 +20,8 @@ EOF
 		;;
 	a*)
 		shift
-		printf '%s\n' "$*" | http patch "$address/add_topic"
+		topic="$1"
+		printf '%s\n' "$topic" | http patch "$address/add_topic"
 		;;
 	c*)
 		shift
@@ -27,15 +30,18 @@ EOF
 	p*)
 		shift
 		topic="$1"
-		printf '%s:%s\n' "$topic" "$*" | http post "$address/publish"
+		message="$2"
+		printf '%s:%s\n' "$topic" "$message" | http post "$address/publish"
 		;;
 	r*)
 		shift
-		printf 'REPLAY:%s\n' "$*" | websocat "ws://$address/subscribe"
+		topic="$1"
+		printf 'REPLAY: %s\n' "$topic" | websocat "ws://$address/subscribe"
 		;;
 	s*)
 		shift
-		printf 'SUBSCRIBE: %s\n' "$*" | websocat "ws://$address/subscribe"
+		topic="$1"
+		printf 'SUBSCRIBE: %s\n' "$topic" | websocat "ws://$address/subscribe"
 		;;
 	t*)
 		shift
