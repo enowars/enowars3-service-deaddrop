@@ -11,6 +11,10 @@ from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 session = requests.Session()
 
 
+def generate_topic(s):
+    return sha256ify(s)
+
+
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
@@ -131,25 +135,25 @@ class MessageQueueChecker(BaseChecker):
         return response.text
 
     def putflag(self):
-        topic = sha256ify(self.flag)
+        topic = generate_topic(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
         self.must_publish_to_new_topic(topic, self.flag)
         self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
-        topic = sha256ify(self.flag)
+        topic = generate_topic(self.flag)
         self.debug(f'Getting flag "{self.flag}" from topic "{topic}"...')
         self.must_get_message(topic, self.flag)
         self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
-        topic = sha256ify(self.noise)
+        topic = generate_topic(self.noise)
         self.debug(f'Putting noise "{self.noise}" to topic "{topic}"...')
         self.must_publish_to_new_topic(topic, self.noise)
         self.debug(f'Noise "{self.noise}" put')
 
     def getnoise(self):
-        topic = sha256ify(self.noise)
+        topic = generate_topic(self.noise)
         self.debug(f'Getting noise "{self.noise}" from topic "{topic}"...')
         self.must_get_message(topic, self.noise)
         self.debug(f'Noise "{self.noise}" got')
