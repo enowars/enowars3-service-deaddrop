@@ -2,13 +2,18 @@ import asyncio
 import json
 import random
 import string
+import sys
 
 import requests
 
-import websockets
+import websocket
 from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 
 session = requests.Session()
+
+
+def generate_topic(s):
+    return sha256ify(s)
 
 
 class MessageQueueChecker(BaseChecker):
@@ -54,25 +59,25 @@ class MessageQueueChecker(BaseChecker):
 
     # Send a replay request for the given topic to the subscribe endpoint.
     def replay(self, topic: str) -> str:
-        async def request(topic: str):
-            async with websockets.connect(
-                f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
-            ) as websocket:
-                # Ignore the greeting message.
-                greeting = await websocket.recv()
+        socket = websocket.create_connection(
+            f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
+        )
+        greeting = socket.recv()
+        if self.greeting != greeting:
+            raise BrokenServiceException(
+                f'Endpoint "/subscribe" greeted us with: {greeting}'
+            )
+        # Request to replay the topic with the flag.
+        socket.send(f"REPLAY: {topic}")
 
-                if greeting != self.greeting:
-                    raise BrokenServiceException(
-                        f'Endpoint "/subscribe" greeted us with: {greeting}'
-                    )
+        # Receive all the messages related to the requested topic.
+        messages = socket.recv()
 
-                # Request to replay the topic with the flag.
-                await websocket.send(f"REPLAY: {topic}")
+        # XXX: Is it alright to just close the socket here? Could it be
+        # that the socket is not closed if we abort earlier?
+        socket.close()
 
-                # Receive all the messages relateed to the requested topic.
-                return await websocket.recv()
-
-        return asyncio.get_event_loop().run_until_complete(request(topic))
+        return messages
 
     def add_private_topic(self, topic):
         return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")
@@ -82,6 +87,9 @@ class MessageQueueChecker(BaseChecker):
 
     def publish(self, topic, message):
         return self.http_post(self.publish_endpoint, data=f"{topic}:{message}")
+
+    def list_topics(self):
+        return self.http_get(self.topics_endpoint)
 
     def must_publish_to_new_topic(self, topic, message, private=True):
         if private:
@@ -103,13 +111,15 @@ class MessageQueueChecker(BaseChecker):
 
         self.debug(f'Message "{message}" published')
 
-    def must_get_message(self, topic, message):
-        self.debug(f'Getting message "{message}" from topic "{topic}"...')
+    def must_replay(self, topic):
+        self.debug(f'Replaying topic "{topic}"...')
         response = self.replay(topic)
         if response == "Unknown Topic.":
-            raise BrokenServiceException(
-                f'Message "{message}" not found in topic "{topic}"'
-            )
+            raise BrokenServiceException(f'Unable to replay topic "{topic}"')
+        return response
+
+    def must_get_message(self, topic, message):
+        response = self.must_replay(topic)
         if response.find(message) == -1:
             raise BrokenServiceException(
                 f'Message "{message}" missing from replay of topic "{topic}"'
@@ -117,38 +127,55 @@ class MessageQueueChecker(BaseChecker):
 
         self.debug(f'Message "{message}" got')
 
+    def must_list_topics(self):
+        self.debug(f"Listing topics...")
+        response = self.list_topics()
+        if response.status_code != 200:
+            raise BrokenServiceException(
+                f"Unexpected status code from the /topics endpoint: {response.status_code}"
+            )
+        self.debug(f"Topics listed")
+        return response.text
+
     def putflag(self):
-        topic = sha256ify(self.flag)
+        topic = generate_topic(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
         self.must_publish_to_new_topic(topic, self.flag)
         self.debug(f'Flag "{self.flag}" put')
 
     def getflag(self):
-        topic = sha256ify(self.flag)
+        topic = generate_topic(self.flag)
         self.debug(f'Getting flag "{self.flag}" from topic "{topic}"...')
         self.must_get_message(topic, self.flag)
         self.debug(f'Flag "{self.flag}" got')
 
     def putnoise(self):
-        topic = sha256ify(self.noise)
+        topic = generate_topic(self.noise)
         self.debug(f'Putting noise "{self.noise}" to topic "{topic}"...')
         self.must_publish_to_new_topic(topic, self.noise)
         self.debug(f'Noise "{self.noise}" put')
 
     def getnoise(self):
-        topic = sha256ify(self.noise)
+        topic = generate_topic(self.noise)
         self.debug(f'Getting noise "{self.noise}" from topic "{topic}"...')
         self.must_get_message(topic, self.noise)
         self.debug(f'Noise "{self.noise}" got')
 
     def havoc(self):
-        response = self.http_get("/topics")
-        if response.status_code != 200:
+        topics = self.must_list_topics()
+
+    def exploit(self):
+        desired_topic = generate_topic(self.flag)
+        exploitable_topic = "topics"
+        all_topics = self.must_replay(exploitable_topic)
+        if not all_topics.find(desired_topic):
             raise BrokenServiceException(
-                f"Unexpected status code from the /topics endpoint: {response.status_code}"
+                f'Topic "{desired_topic}" missing from replay of topic "{exploitable_topic}"'
             )
+        self.must_get_message(desired_topic, self.flag)
+        self.debug("Service exploited")
 
 
 app = MessageQueueChecker.service
 if __name__ == "__main__":
-    run(MessageQueueChecker)
+    sys.exit(run(MessageQueueChecker))
