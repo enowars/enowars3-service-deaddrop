@@ -19,8 +19,18 @@ su: ${SERVICE_DIR}/docker-compose.yml
 sd: ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C "${SERVICE_DIR}" down
 
-.PHONY: test-run
-test-run:
+.PHONY: test-setup
+test-setup:
+	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
+	${MAKE} sd
+	${MAKE} su
+
+.PHONY: test-teardown
+test-teardown:
+	${MAKE} sd
+
+.PHONY: do-test-smoke
+do-test-smoke:
 	${CHECKER_CMD} havoc
 	${CHECKER_CMD} putflag --flag "${FLAG}"
 	${CHECKER_CMD} getflag --flag "${FLAG}"
@@ -28,16 +38,30 @@ test-run:
 	${CHECKER_CMD} getnoise --flag "${NOISE}"
 	${CHECKER_CMD} havoc
 
+.PHONY: test-smoke
+test-smoke:
+	${MAKE} test-setup
+	sleep 1
+	${MAKE} do-test-smoke
+	${MAKE} test-teardown
+
+.PHONY: do-test-exploit
+do-test-exploit:
+	${CHECKER_CMD} putflag --flag "${FLAG}"
+	${CHECKER_CMD} putnoise --flag "${NOISE}"
+	${CHECKER_CMD} exploit --flag "${FLAG}"
+
+.PHONY: test-exploit
+test-exploit:
+	${MAKE} test-setup
+	sleep 1
+	${MAKE} do-test-exploit
+	${MAKE} test-teardown
+
 .PHONY: test
 test:
-	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
-	${MAKE} sd
-	${MAKE} su
-
-	sleep 1
-	${MAKE} test-run
-
-	${MAKE} sd
+	${MAKE} test-smoke
+	${MAKE} test-exploit
 
 RELEASE_BRANCH=	release
 REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-messagequeue.git
