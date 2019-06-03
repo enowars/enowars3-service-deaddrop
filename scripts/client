@@ -1,6 +1,8 @@
 #! /bin/sh -
 
-address="[fd00:1337:eeee:ba17::1]:8080"
+ip_address="[fd00:1337:eeee:ba17::1]"
+port="8080"
+address="${ip_address}:${port}"
 
 case $1 in
 	"")
@@ -20,7 +22,7 @@ EOF
 		;;
 	c*)
 		shift
-		python3 ./checker/checker.py run -a "$address" "$@"
+		python3 ./checker/checker.py run -a "$ip_address" "$@"
 		;;
 	p*)
 		shift
