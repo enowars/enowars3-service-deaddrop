@@ -83,6 +83,9 @@ class MessageQueueChecker(BaseChecker):
     def publish(self, topic, message):
         return self.http_post(self.publish_endpoint, data=f"{topic}:{message}")
 
+    def list_topics(self):
+        return self.http_get(self.topics_endpoint)
+
     def must_publish_to_new_topic(self, topic, message, private=True):
         if private:
             self.debug(f'Publishing message "{message}" to private topic "{topic}"')
@@ -117,6 +120,16 @@ class MessageQueueChecker(BaseChecker):
 
         self.debug(f'Message "{message}" got')
 
+    def must_list_topics(self):
+        self.debug(f"Listing topics...")
+        response = self.list_topics()
+        if response.status_code != 200:
+            raise BrokenServiceException(
+                f"Unexpected status code from the /topics endpoint: {response.status_code}"
+            )
+        self.debug(f"Topics listed")
+        return response.text
+
     def putflag(self):
         topic = sha256ify(self.flag)
         self.debug(f'Putting flag "{self.flag}" to topic "{topic}"...')
@@ -142,11 +155,7 @@ class MessageQueueChecker(BaseChecker):
         self.debug(f'Noise "{self.noise}" got')
 
     def havoc(self):
-        response = self.http_get("/topics")
-        if response.status_code != 200:
-            raise BrokenServiceException(
-                f"Unexpected status code from the /topics endpoint: {response.status_code}"
-            )
+        topics = self.must_list_topics()
 
 
 app = MessageQueueChecker.service
