@@ -5,7 +5,7 @@ import string
 
 import requests
 
-import websockets
+import websocket
 from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 
 session = requests.Session()
@@ -54,25 +54,25 @@ class MessageQueueChecker(BaseChecker):
 
     # Send a replay request for the given topic to the subscribe endpoint.
     def replay(self, topic: str) -> str:
-        async def request(topic: str):
-            async with websockets.connect(
-                f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
-            ) as websocket:
-                # Ignore the greeting message.
-                greeting = await websocket.recv()
+        with websocket.create_connection(
+            f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
+        ) as socket:
+            greeting = socket.recv()
+            if self.greeting != greeting:
+                raise BrokenServiceException(
+                    f'Endpoint "/subscribe" greeted us with: {greeting}'
+                )
+            # Request to replay the topic with the flag.
+            socket.send(f"REPLAY: {topic}")
 
-                if greeting != self.greeting:
-                    raise BrokenServiceException(
-                        f'Endpoint "/subscribe" greeted us with: {greeting}'
-                    )
+            # Receive all the messages related to the requested topic.
+            messages = socket.recv()
 
-                # Request to replay the topic with the flag.
-                await websocket.send(f"REPLAY: {topic}")
+            # XXX: Is it alright to just close the socket here? Could it be
+            # that the socket is not closed if we abort earlier?
+            socket.close()
 
-                # Receive all the messages relateed to the requested topic.
-                return await websocket.recv()
-
-        return asyncio.get_event_loop().run_until_complete(request(topic))
+            return messages
 
     def add_private_topic(self, topic):
         return self.http("PATCH", self.add_topic_endpoint, data=f"- {topic}")
