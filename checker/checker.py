@@ -2,6 +2,7 @@ import asyncio
 import json
 import random
 import string
+import sys
 
 import requests
 
@@ -164,4 +165,4 @@ class MessageQueueChecker(BaseChecker):
 
 app = MessageQueueChecker.service
 if __name__ == "__main__":
-    run(MessageQueueChecker)
+    sys.exit(run(MessageQueueChecker))
