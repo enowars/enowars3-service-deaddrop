@@ -7,6 +7,7 @@ case $1 in
 		cat <<EOF
 Usage:
 ./client a [-] topic
+./client c [checkerargs ...]
 ./client p topic message
 ./client r topic
 ./client s topic
@@ -16,6 +17,10 @@ EOF
 	a*)
 		shift
 		printf '%s\n' "$*" | http patch "$address/add_topic"
+		;;
+	c*)
+		shift
+		python3 ./checker/checker.py run -a "$address" "$@"
 		;;
 	p*)
 		shift
