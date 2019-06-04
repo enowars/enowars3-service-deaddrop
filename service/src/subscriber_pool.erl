@@ -22,10 +22,10 @@ init([]) ->
 
 handle_call(Request, _From, State) ->
   {_Method, Topic, Message} = Request,
-  % State is a list of one dict. 
+  % State is a list of one dict.
   ResponseMsg = case dict:find(Topic, hd(State)) of
-    {ok, Value} -> 
-      case notify_subscribers(Value, Message) of 
+    {ok, Value} ->
+      case notify_subscribers(Value, Message) of
         done -> "Processed PUBLISH.";
         error -> "Error returned by notify_subscribers."
       end;
@@ -33,23 +33,23 @@ handle_call(Request, _From, State) ->
   end,
   {reply, ResponseMsg, State}.
 
-handle_cast(Request, State) -> 
+handle_cast(Request, State) ->
   {Method, From, Topic} = Request,
   NewState = case Method of
     "New SUB" -> [dict:append(Topic, From, hd(State))];
-    _ -> 
-      io:fwrite("Invalid Method."), 
+    _ ->
+      io:fwrite("Invalid Method."),
       State
   end,
   {noreply, NewState}.
 
 % Iteratre over list of PIDs and send msg to each.
-notify_subscribers([], _) -> 
+notify_subscribers([], _) ->
   done;
 notify_subscribers([Head | Tail], Message) ->
   Head ! {publish, Message},
   notify_subscribers(Tail, Message).
-  
+
 
 % basically, we ignore these, but keep the same counter state
 handle_info(_Msg, N) -> {noreply, N}.
