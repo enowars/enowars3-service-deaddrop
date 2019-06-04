@@ -8,12 +8,12 @@ init(Req0, State) ->
     {cowboy_websocket, Req0, State, #{idle_timeout => 120000}}.
 
 websocket_init(State) ->
-    io:fwrite("WS State: ~p \n", [State]),
+    io:fwrite("WS State: ~p ~n", [State]),
     {reply, {text, "Heyhey from WS Handler.."}, State}.
 
 
 websocket_handle(Frame = {text, MessageBin}, State) ->
-    io:fwrite("ws handler received frame: ~p \n", [Frame]),
+    io:fwrite("ws handler received frame: ~p ~n", [Frame]),
     List = string:tokens(binary_to_list(MessageBin), ":"),
     Reply = case length(tl(List)) of 
         N when N == 1 ->
@@ -50,7 +50,7 @@ subscribe(Topic) ->
 
 replay(Topic) -> 
     Result = gen_event:call({global, file_handler}, file_handler, {replay, Topic}),
-    % io:fwrite("rplay got: ~p \n", [Result]).
+    % io:fwrite("rplay got: ~p ~n", [Result]).
     Result.
 
 check_topic(Topic) ->
