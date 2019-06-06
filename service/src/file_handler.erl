@@ -6,35 +6,35 @@
 init(_) ->
     FileName = "topics.txt",
 	PrivPath = get_priv_path(FileName),
-    case filelib:ensure_dir(PrivPath) of 
+    case filelib:ensure_dir(PrivPath) of
         ok -> null;
-        {error, Reason} -> io:fwrite("could not find/create path to topics.txt: ~p \n", [Reason])
+        {error, Reason} -> io:fwrite("could not find/create path to topics.txt: ~p ~n", [Reason])
     end,
     case file:open(PrivPath, [write]) of
-        {ok, _} -> 
+        {ok, _} ->
                 null;
-        {error, Error} -> io:fwrite("Got error while creating topics.txt: ~p \n", [Error])
+        {error, Error} -> io:fwrite("Got error while creating topics.txt: ~p ~n", [Error])
     end,
-    
+
     io:fwrite("Initialised file_handler"),
     {ok, self()}.
 
 % Event: {method, msg}
 handle_event(Event, State) ->
-    io:fwrite("Rcv event in file_handler \n"),
-    case Event of 
+    io:fwrite("Rcv event in file_handler ~n"),
+    case Event of
         {new, {Topic, Message}} -> save_message(Topic, Message);
         {replay, _} -> ok
     end,
     {ok, State}.
 
-handle_call(Event, State) -> 
-    case Event of 
+handle_call(Event, State) ->
+    case Event of
         {replay, Topic} ->
             Messages = retrieve_messages(Topic),
             {ok, Messages, State};
-        {create_save, Topic} -> 
-            case create_message_save(Topic) of 
+        {create_save, Topic} ->
+            case create_message_save(Topic) of
                 {ok} -> {ok, ok, State};
                 {error, Msg} -> {ok, Msg, State}
             end;
@@ -55,7 +55,7 @@ create_message_save(Topic) ->
     Path = get_priv_path(FileName),
     case file:open(Path, [append]) of
         {ok, Fh} ->
-            io:fwrite("Writing to path: ~p \n", [Path]),
+            io:fwrite("Writing to path: ~p ~n", [Path]),
             file:write(Fh, io_lib:format("All messages sent on topic: ~s\n", [Topic])),
             {ok};
         {error, _} -> {error, "Error while creating message save."}
@@ -78,9 +78,9 @@ retrieve_messages(Topic) ->
 retrieve_topics() ->
     FileName = "topics.txt",
     Path = get_priv_path(FileName),
-    io:fwrite("Reading from path: ~p \n", [Path]),
+    io:fwrite("Reading from path: ~p ~n", [Path]),
     {ok, Binary} = file:read_file(Path),
-    io:fwrite("Got: ~p \n", [binary_to_list(Binary)]),
+    io:fwrite("Got: ~p ~n", [binary_to_list(Binary)]),
     string:tokens(binary_to_list(Binary), "\n").
 
 append_topic(Topic) ->
@@ -89,8 +89,8 @@ append_topic(Topic) ->
     NewTopic = Topic ++ "\n",
     % Write new Topic to topics file
     Path = get_priv_path(FileName),
-    case file:open(Path, [append]) of 
-        {ok, Fh} -> 
+    case file:open(Path, [append]) of
+        {ok, Fh} ->
             file:write(Fh, NewTopic),
             {ok};
         {error, _} -> {error, "Error while saving new topic."}
