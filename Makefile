@@ -134,6 +134,14 @@ do-release-push:
 release-clean:
 	rm -rf -- ${RELEASE_DIR}
 
+CLIENT=	./scripts/client
+.PHONY: setup-debug
+setup-debug:
+	${CLIENT} a '- priv'
+	${CLIENT} a pub
+	${CLIENT} p '- priv' 'private message 1'
+	${CLIENT} p 'pub' 'public message 1'
+
 .PHONY: sync-release-to-master
 sync-release-to-master:
 	git checkout master
