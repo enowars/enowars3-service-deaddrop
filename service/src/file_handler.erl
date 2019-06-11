@@ -64,7 +64,7 @@ create_message_save(Topic) ->
 save_message(Topic, Message) ->
     FileName = Topic ++ ".txt",
     Path = get_priv_path(FileName),
-    case file:open(Path, [append]) of 
+    case file:open(Path, [append]) of
         {ok, Fh} -> file:write(Fh, "** " ++ Message ++ "\n");
         {error, _} -> io:fwrite("Error while saving message")
     end.
