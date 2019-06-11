@@ -81,7 +81,7 @@ retrieve_topics() ->
     io:fwrite("Reading from path: ~p \n", [Path]),
     {ok, Binary} = file:read_file(Path),
     io:fwrite("Got: ~p \n", [binary_to_list(Binary)]),
-    Topics = binary_to_list(Binary) ++ "topics",
+    Topics = binary_to_list(Binary) ++ "- topics",
     string:tokens(Topics, "\n").
 
 append_topic(Topic) ->
