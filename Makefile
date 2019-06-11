@@ -9,6 +9,14 @@ NOISE=	=This=Is=Neither=A=Flag=Nor=A=Love=Song===31337
 ${SERVICE_DIR}/docker-compose.yml: ${SERVICE_DIR}/docker-compose.yml.template
 	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
 
+.PHONY: se
+se:
+	docker exec -it service_queue_1 sh
+
+.PHONY: sa
+sa:
+	docker attach service_queue_1
+
 # Service up.
 .PHONY: su
 su: ${SERVICE_DIR}/docker-compose.yml
