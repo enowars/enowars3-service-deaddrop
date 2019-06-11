@@ -140,10 +140,14 @@ sync-release-to-master:
 	git ls-tree -r origin/release --name-only | xargs -n 1 git checkout --force origin/release
 	env PAGER=cat git diff --staged
 
-.PHONY: ultra-clean
-ultra-clean:
+.PHONY: clean
+clean:
 	find . -name '*.log' -delete
 	find . -name '*.core' -delete
+
+.PHONY: ultra-clean
+ultra-clean:
+	${MAKE} clean
 	${MAKE} -C service distclean
 	rm -rf -- .data
 	rm -rf -- checker/.data
