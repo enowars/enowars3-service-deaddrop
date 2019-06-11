@@ -1,6 +1,8 @@
 # Build stage 0
 FROM erlang:alpine
 
+RUN apk add --no-cache --update make git
+
 RUN mkdir -p /buildroot
 WORKDIR /buildroot
 
@@ -9,11 +11,12 @@ COPY erlang.mk erlang.mk
 COPY relx.config relx.config
 COPY config config
 
-RUN apk add --no-cache --update make git
 RUN make deps
 
 # Build stage 1
 FROM erlang:alpine
+
+RUN apk add --no-cache --update curl make
 
 RUN mkdir -p /buildroot
 WORKDIR /buildroot
@@ -27,8 +30,6 @@ COPY src/publish_handler.erl src/
 COPY src/subscribe_handler.erl src/
 COPY src/subscriber_pool.erl src/
 COPY src/topics_handler.erl src/
-
-RUN apk add --no-cache --update curl make
 
 RUN make rel
 
