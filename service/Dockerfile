@@ -19,7 +19,14 @@ RUN mkdir -p /buildroot
 WORKDIR /buildroot
 
 COPY --from=0 /buildroot /buildroot
-COPY src src
+COPY src/add_topic_handler.erl src/
+COPY src/file_handler.erl src/
+COPY src/msq_ctf_service_app.erl src/
+COPY src/msq_ctf_service_sup.erl src/
+COPY src/publish_handler.erl src/
+COPY src/subscribe_handler.erl src/
+COPY src/subscriber_pool.erl src/
+COPY src/topics_handler.erl src/
 
 RUN apk add --no-cache --update curl make
 
