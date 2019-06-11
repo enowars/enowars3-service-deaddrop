@@ -33,17 +33,29 @@ websocket_handle(_Frame, State) ->
 create_reply(Method, Topic) ->
     case check_topic(Topic) of
         true ->
+            StrippedTopic = strip_prefix(Topic),
             case Method of
                 "SUBSCRIBE" ->
-                    subscribe(Topic),
+                    subscribe(StrippedTopic),
                     "Subscribed.";
                 "REPLAY" ->
-                    Result = replay(Topic),
+                    Result = replay(StrippedTopic),
                     Result ++ "\n\n Finished replay.";
                 _ -> "Invalid Method."
             end;
         false -> "Unknown Topic."
     end.
+
+strip_prefix(Topic) ->
+    case string:prefix(Topic, "- ") of
+        nomatch ->
+            case string:prefix(Topic, "+ ") of
+                nomatch -> Topic;
+                PublicTopic -> PublicTopic
+            end;
+        PrivateTopic -> PrivateTopic
+    end.
+
 
 subscribe(Topic) ->
     gen_server:cast({global, subscriber_pool}, {"New SUB", self(), Topic}).
@@ -55,17 +67,8 @@ replay(Topic) ->
 
 check_topic(Topic) ->
     Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
-    search_topic(Topics, Topic).
-
-search_topic(List, Topic) ->
-    % Remove preceeding special character from file line.
-    case catch string:slice(hd(List), 2) of
-        Topic -> true;
-        {'EXIT', {badarg, _}} -> false;
-        _ ->
-            search_topic(tl(List), Topic)
-    end.
-
+    io:fwrite("Topics: ~p", [Topics]),
+    lists:member(Topic, Topics).
 
 websocket_info({publish, Text}, State) ->
     {reply, {text, Text}, State};
