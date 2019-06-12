@@ -1,0 +1,16 @@
+---
+version: 2
+plan:
+  project-key: SER
+  name: MessageQueue
+  key: MESS
+
+stages:
+  - First Build Stage:
+      jobs:
+        - Run Smoke Tests
+
+Run Smoke Tests:
+  tasks:
+    - script:
+        - make test-smoke
