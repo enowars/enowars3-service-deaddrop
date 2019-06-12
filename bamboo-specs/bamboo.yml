@@ -6,25 +6,18 @@ plan:
   key: MESS
 
 stages:
-  - Get dependencies:
-    jobs:
-      - Install checker dependencies with pip
-  - Test:
+  - First Build Stage:
       jobs:
-        - Run smoke tests
-        - Run exploit tests
+        - Install dependencies
+        - Run tests
 
-Install checker dependencies with pip:
+Install dependencies:
   tasks:
     - script:
         - pip3 install -r checker/requirements.txt
 
-Run smoke tests:
+Run tests:
   tasks:
     - script:
         - make test-smoke
-
-Run exploit tests:
-  tasks:
-    - script:
         - make test-exploit
