@@ -9,6 +9,7 @@ stages:
   - Test Stage:
       jobs:
         - Run Smoke Tests
+        - Run Exploit Tests
 
 Run Smoke Tests:
   tasks:
