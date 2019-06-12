@@ -1,3 +1,4 @@
+---
 version: 2
 plan:
   project-key: SER
@@ -15,7 +16,8 @@ stages:
 
 Install checker dependencies with pip:
   tasks:
-    - pip3 install -r checker/requirements.txt
+    - script:
+        - pip3 install -r checker/requirements.txt
 
 Run smoke tests:
   tasks:
