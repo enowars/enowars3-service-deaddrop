@@ -20,6 +20,9 @@ make -C checker publish
 ### Updating the release branch with the latest service code from master
 
 ```sh
+# Optionally, clean up any remainings after previous releases.
+make relase-clean
+
 make release-clone
 make release-update
 
