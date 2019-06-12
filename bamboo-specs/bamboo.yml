@@ -6,10 +6,17 @@ plan:
   key: MESS
 
 stages:
+  - Install Dependencies Stage:
+    jobs:
+      - Install Checker Dependencies With pip
   - Test Stage:
       jobs:
         - Run Smoke Tests
         - Run Exploit Tests
+
+Install Checker Dependencies With pip:
+  tasks:
+    - pip3 install -r checker/requirements.txt
 
 Run Smoke Tests:
   tasks:
