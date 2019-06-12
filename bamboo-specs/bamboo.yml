@@ -6,7 +6,7 @@ plan:
   key: MESS
 
 stages:
-  - First Build Stage:
+  - Test Stage:
       jobs:
         - Run Smoke Tests
 
@@ -14,3 +14,8 @@ Run Smoke Tests:
   tasks:
     - script:
         - make test-smoke
+
+Run Exploit Tests:
+  tasks:
+    - script:
+        - make test-exploit
