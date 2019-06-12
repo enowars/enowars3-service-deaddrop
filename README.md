@@ -64,6 +64,21 @@ See [Vagrantfile](Vagrantfile) to figure out what dependencies and provisioning 
 
 ### Testing
 
+#### Dependencies
+
+Required tools:
+
+-	bmake or GNU make
+-	pip3
+
+Installing dependencies:
+
+```sh
+pip3 install -r checker/requirements.txt
+```
+
+#### Running Tests
+
 ```sh
 make test
 ```
