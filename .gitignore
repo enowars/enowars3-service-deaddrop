@@ -13,3 +13,4 @@ msq_ctf_service.d
 .env
 new-release
 service/docker-compose.yml
+*.swp
