@@ -6,6 +6,8 @@ General description
 
 This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
 
+CI: https://ci.eno.host/browse/SER-MESS
+
 Releasing
 ---------
 
