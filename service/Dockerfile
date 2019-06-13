@@ -1,7 +1,18 @@
 # Build stage 0
 FROM erlang:alpine
 
-RUN apk add --no-cache --update make git
+RUN mkdir /pkgs
+WORKDIR /pkgs
+RUN mkdir curl
+RUN apk fetch --output curl --recursive --no-cache -- curl
+RUN mkdir git
+RUN apk fetch --output git --recursive --no-cache -- git
+RUN mkdir make
+RUN apk fetch --output make --recursive --no-cache -- make
+RUN mkdir ncurses-libs
+RUN apk fetch --output ncurses-libs --recursive --no-cache -- ncurses-libs
+
+RUN apk add --no-network /pkgs/make/* /pkgs/git/*
 
 RUN mkdir -p /buildroot
 WORKDIR /buildroot
@@ -16,7 +27,11 @@ RUN make deps
 # Build stage 1
 FROM erlang:alpine
 
-RUN apk add --no-cache --update curl make
+COPY --from=0 /pkgs /pkgs
+
+RUN apk add --no-network /pkgs/curl/*
+RUN apk add --no-network /pkgs/git/*
+RUN apk add --no-network /pkgs/make/*
 
 RUN mkdir -p /buildroot
 WORKDIR /buildroot
@@ -36,7 +51,9 @@ RUN make rel
 # Build stage 2
 FROM alpine
 
-RUN apk add --no-cache --update ncurses-libs
+COPY --from=0 /pkgs /pkgs
+
+RUN apk add --no-network /pkgs/ncurses-libs/*
 
 # Install the released application
 COPY --from=1 /buildroot/_rel /srv
