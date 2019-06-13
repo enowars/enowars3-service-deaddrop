@@ -153,6 +153,14 @@ do-release-push:
 release-clean:
 	rm -rf -- ${RELEASE_DIR}
 
+.PHONY: release
+release: release-clean
+	${MAKE} release-clone
+	${MAKE} release-update
+	${MAKE} release-push
+	${MAKE} release-tag
+	${MAKE} release-clean
+
 CLIENT=	./scripts/client
 .PHONY: setup-debug
 setup-debug:

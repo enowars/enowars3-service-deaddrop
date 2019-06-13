@@ -35,6 +35,8 @@ env VERSION=0.1.0 make release-tag
 make relase-clean
 ```
 
+If you are brave enough you may also decide to use `env VERSION=0.1.0 make release`, which does all the necessary steps mentioned above.
+
 ### Integrating release branch hotfixes back to master
 
 ```sh
