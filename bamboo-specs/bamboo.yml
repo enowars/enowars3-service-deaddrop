@@ -9,15 +9,27 @@ stages:
   - First Build Stage:
       jobs:
         - Install dependencies
-        - Run tests
+        - Build checker
+        - Build service
+        # - Run tests
 
 Install dependencies:
   tasks:
     - script:
         - pip3 install -r checker/requirements.txt
 
-Run tests:
+Build checker:
   tasks:
     - script:
-        - make test-smoke
-        - make test-exploit
+        - cd checker && docker-compose build
+
+Build service:
+  tasks:
+    - script:
+        - cd service && docker-compose build
+
+# Run tests:
+#   tasks:
+#     - script:
+#         - make test-smoke
+#         - make test-exploit
