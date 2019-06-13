@@ -30,6 +30,8 @@ make release-update
 make release-qa
 
 make release-push
+env VERSION=0.1.0 make release-tag
+
 make relase-clean
 ```
 

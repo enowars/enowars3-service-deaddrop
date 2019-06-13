@@ -121,6 +121,25 @@ release-qa:
 	${MAKE} -C ${SERVICE_DIR} down
 	git checkout -- ${SERVICE_DIR}/docker-compose.yml
 
+VERSION_FORMAT=	[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*
+.PHONY: release-tag
+release-tag:
+	${MAKE} ${RELEASE_DIR} -f ${PWD}/Makefile do-release-tag
+
+.PHONY: do-release-tag
+do-release-tag:
+	@echo "Checking if new version matches \"${VERSION_FORMAT}\"..."
+	@expr "${VERSION}" : '${VERSION_FORMAT}' >/dev/null || \
+		{ echo "ERROR: Version \"${VERSION}\" does not match \"${VERSION_FORMAT}\"..." >&2 && false; }
+	@echo "Checking if the new version is unique..."
+	@git tag | grep -o -v "${VERSION}" >/dev/null || \
+		{ echo "ERROR: Version \"${VERSION}\" is not unique..." >&2 && false; }
+	@echo "Checking if the new version is higher than previous versions..."
+	@{ git tag; echo "${VERSION}"; } | grep -o '${VERSION_FORMAT}' | sort | tail -n 1 | grep '${VERSION}' >/dev/null || \
+		{ echo "ERROR: Version \"${VERSION}\" is not higher than previous versions..." >&2 && false; }
+	git tag ${VERSION}
+	git push --tags
+
 .PHONY: release-push
 release-push:
 	${MAKE} MASTER_HASH="$$(git log -n 1 --pretty=format:"%H")" -C ${RELEASE_DIR} -f ${PWD}/Makefile do-release-push
