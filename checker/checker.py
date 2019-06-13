@@ -19,6 +19,10 @@ def generate_topic(s):
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
 
+    flag_count = 1
+    noise_count = 1
+    havoc_count = 1
+
     @property
     def greeting(self):
         return "Heyhey from WS Handler.."
