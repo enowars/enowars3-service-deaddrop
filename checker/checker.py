@@ -62,7 +62,11 @@ class MessageQueueChecker(BaseChecker):
         return "/add_topic"
 
     # Send a replay request for the given topic to the subscribe endpoint.
-    def replay(self, topic: str) -> str:
+    def replay(self, topic: str, private=True) -> str:
+        if private:
+            topic_prefix = "- "
+        else:
+            topic_prefix = "+ "
         socket = websocket.create_connection(
             f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
         )
@@ -72,7 +76,7 @@ class MessageQueueChecker(BaseChecker):
                 f'Endpoint "/subscribe" greeted us with: {greeting}'
             )
         # Request to replay the topic with the flag.
-        socket.send(f"REPLAY: {topic}")
+        socket.send(f"REPLAY:{topic_prefix}{topic}")
 
         # Receive all the messages related to the requested topic.
         messages = socket.recv()
