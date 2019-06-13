@@ -26,7 +26,7 @@ Build checker:
 Build service:
   tasks:
     - script:
-        - cd service && docker-compose build
+        - make su
 
 # Run tests:
 #   tasks:
