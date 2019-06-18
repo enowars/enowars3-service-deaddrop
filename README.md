@@ -11,12 +11,6 @@ CI: https://ci.eno.host/browse/SER-MESS
 Releasing
 ---------
 
-### Building, tagging, and pushing an new chcker image to the registry
-
-```sh
-make -C checker publish
-```
-
 ### Updating the release branch with the latest service code from master
 
 ```sh
