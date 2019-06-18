@@ -27,17 +27,35 @@ su: ${SERVICE_DIR}/docker-compose.yml
 sd: ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} -C "${SERVICE_DIR}" down
 
+.PHONY: cu
+cu:
+	cd checker && docker-compose up --build -d
+
+.PHONY: cd
+cd:
+	cd checker && docker-compose down
+
 TEST_DELAY=	2
 
-.PHONY: test-setup
-test-setup:
+.PHONY: test-setup-service
+test-setup-service:
 	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
 	${MAKE} sd
 	${MAKE} su
 
-.PHONY: test-teardown
-test-teardown:
+.PHONY: test-setup-checker
+test-setup-checker:
+	sed 's/TEAMID/${TEST_TEAMID}/g' ${SERVICE_DIR}/docker-compose.yml.template > ${SERVICE_DIR}/docker-compose.yml
+	${MAKE} cd
+	${MAKE} cu
+
+.PHONY: test-teardown-service
+test-teardown-service:
 	${MAKE} sd
+
+.PHONY: test-teardown-checker
+test-teardown-checker:
+	${MAKE} cu
 
 .PHONY: do-test-smoke
 do-test-smoke:
@@ -50,10 +68,10 @@ do-test-smoke:
 
 .PHONY: test-smoke
 test-smoke:
-	${MAKE} test-setup
+	${MAKE} test-setup-service
 	sleep ${TEST_DELAY}
 	${MAKE} do-test-smoke
-	${MAKE} test-teardown
+	${MAKE} test-teardown-service
 
 .PHONY: do-test-exploit
 do-test-exploit:
@@ -63,10 +81,23 @@ do-test-exploit:
 
 .PHONY: test-exploit
 test-exploit:
-	${MAKE} test-setup
+	${MAKE} test-setup-service
 	sleep ${TEST_DELAY}
 	${MAKE} do-test-exploit
-	${MAKE} test-teardown
+	${MAKE} test-teardown-service
+
+.PHONY: do-test-checker
+do-test-checker:
+	echo ok
+
+.PHONY: test-checker
+test-checker:
+	${MAKE} test-setup-service
+	${MAKE} test-setup-checker
+	sleep ${TEST_DELAY}
+	${MAKE} do-test-checker
+	${MAKE} test-teardown-checker
+	${MAKE} test-teardown-service
 
 .PHONY: test
 test:
