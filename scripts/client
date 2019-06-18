@@ -10,12 +10,12 @@ case ${1:-} in
 	"")
 		cat <<EOF
 Usage:
-./client a <topic>              Add a topic
-./client c [<checkerargs> ..]   General wrapper for checker.py
-./client p <topic> <message>    Publish a message to a topic
-./client r <topic>              Replay a topic
-./client s <topic>              Subscribe to a topic
-./client t                      List all topics
+$0 a <topic>               Add a topic
+$0 c [<checkerargs> ...]   General wrapper for checker.py (for example: $0 c exploit)
+$0 p <topic> <message>     Publish a message to a topic
+$0 r <topic>               Replay a topic
+$0 s <topic>               Subscribe to a topic
+$0 t                       List all topics
 EOF
 		;;
 	a*)
