@@ -11,14 +11,13 @@ from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 
 session = requests.Session()
 
-
 def generate_topic(s):
     return sha256ify(s)
 
 
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
-
+    service_name = "deaddrop"
     flag_count = 1
     noise_count = 1
     havoc_count = 1
@@ -63,23 +62,29 @@ class MessageQueueChecker(BaseChecker):
 
     # Send a replay request for the given topic to the subscribe endpoint.
     def replay(self, topic: str, private=True) -> str:
+        self.debug(f'Replaying topic "{topic}"...')
+
         if private:
             topic_prefix = "- "
         else:
             topic_prefix = "+ "
+        self.debug(f"Connecting to the websocket...")
         socket = websocket.create_connection(
             f"ws://{self.address}:{self.port}{self.subscribe_endpoint}"
         )
+        self.debug(f"Receiving greeting...")
         greeting = socket.recv()
         if self.greeting != greeting:
             raise BrokenServiceException(
                 f'Endpoint "/subscribe" greeted us with: {greeting}'
             )
+        self.debug(f'Requesting topic "{topic}" to be replayed...')
         # Request to replay the topic with the flag.
         socket.send(f"REPLAY:{topic_prefix}{topic}")
 
         # Receive all the messages related to the requested topic.
         messages = socket.recv()
+        self.debug(f'Replayed messages are: "{messages}"')
 
         # XXX: Is it alright to just close the socket here? Could it be
         # that the socket is not closed if we abort earlier?
@@ -120,10 +125,11 @@ class MessageQueueChecker(BaseChecker):
         self.debug(f'Message "{message}" published')
 
     def must_replay(self, topic):
-        self.debug(f'Replaying topic "{topic}"...')
         response = self.replay(topic)
         if response == "Unknown Topic.":
-            raise BrokenServiceException(f'Unable to replay topic "{topic}"')
+            raise BrokenServiceException(
+                f'Unable to replay topic "{topic}": topic unknown'
+            )
         return response
 
     def must_get_message(self, topic, message):
@@ -173,13 +179,13 @@ class MessageQueueChecker(BaseChecker):
         topics = self.must_list_topics()
 
     def exploit(self):
-        desired_topic = "- " + generate_topic(self.flag)
-        exploitable_topic = "- topics"
+        desired_topic = generate_topic(self.flag)
+        exploitable_topic = "topics"
         all_topics = self.must_replay(exploitable_topic)
         self.debug(f'Received topics are: "{all_topics}"')
         if all_topics.find(desired_topic) == -1:
             raise BrokenServiceException(
-                f'Topic "{desired_topic}" missing from replay of topic "{exploitable_topic}"'
+                f'Topic "{desired_topic}" missing from replay "{all_topics}" of topic "{exploitable_topic}"'
             )
         self.must_get_message(desired_topic, self.flag)
         self.debug("Service exploited")
