@@ -180,8 +180,8 @@ class MessageQueueChecker(BaseChecker):
         topics = self.must_list_topics()
 
     def exploit(self):
-        desired_topic = "- " + generate_topic(self.flag)
-        exploitable_topic = "- topics"
+        desired_topic = generate_topic(self.flag)
+        exploitable_topic = "topics"
         all_topics = self.must_replay(exploitable_topic)
         self.debug(f'Received topics are: "{all_topics}"')
         if all_topics.find(desired_topic) == -1:
