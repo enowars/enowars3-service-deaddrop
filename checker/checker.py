@@ -11,14 +11,13 @@ from enochecker import BaseChecker, BrokenServiceException, run, sha256ify
 
 session = requests.Session()
 
-
 def generate_topic(s):
     return sha256ify(s)
 
 
 class MessageQueueChecker(BaseChecker):
     port = 8080  # default port to send requests to.
-
+    service_name = "deaddrop"
     flag_count = 1
     noise_count = 1
     havoc_count = 1
