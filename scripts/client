@@ -6,21 +6,21 @@ ip_address="[fd00:1337:eeee:ba17::1]"
 port="8080"
 address="${ip_address}:${port}"
 
-case $1 in
+case ${1:-} in
 	"")
 		cat <<EOF
 Usage:
-./client a [-] topic
-./client c [checkerargs ...]
-./client p topic message
-./client r topic
-./client s topic
-./client t
+./client a topic              Add a topic
+./client c [checkerargs ..]   General wrapper for checker.py
+./client p topic message      Publish a message to a topic
+./client r topic              Replay a topic
+./client s topic              Subscribe to a topic
+./client t                    List all topics
 EOF
 		;;
 	a*)
 		shift
-		topic="$1"
+		topic="${1?ERROR: Topic missing}"
 		printf '%s\n' "$topic" | http patch "$address/add_topic"
 		;;
 	c*)
@@ -29,18 +29,18 @@ EOF
 		;;
 	p*)
 		shift
-		topic="$1"
-		message="$2"
+		topic="${1?ERROR: Topic missing}"
+		message="${2?ERROR: Message missing}"
 		printf '%s:%s\n' "$topic" "$message" | http post "$address/publish"
 		;;
 	r*)
 		shift
-		topic="$1"
+		topic="${1?ERROR: Topic missing}"
 		printf 'REPLAY: %s\n' "$topic" | websocat "ws://$address/subscribe"
 		;;
 	s*)
 		shift
-		topic="$1"
+		topic="${1?ERROR: Topic missing}"
 		printf 'SUBSCRIBE: %s\n' "$topic" | websocat "ws://$address/subscribe"
 		;;
 	t*)
