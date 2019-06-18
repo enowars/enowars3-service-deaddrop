@@ -162,12 +162,18 @@ release: release-clean
 	${MAKE} release-clean
 
 CLIENT=	./scripts/client
-.PHONY: setup-debug
-setup-debug:
+.PHONY: debug-restart-and-watch
+debug-restart-and-watch:
+	${MAKE} sd
+	${MAKE} su
+	sleep 2
+
 	${CLIENT} a '- priv'
 	${CLIENT} a pub
 	${CLIENT} p '- priv' 'private message 1'
 	${CLIENT} p 'pub' 'public message 1'
+
+	${MAKE} sa
 
 .PHONY: sync-release-to-master
 sync-release-to-master:
