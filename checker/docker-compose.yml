@@ -24,7 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=deaddrop-checker_backend"
       - "traefik.docker.network=enoverlay"
-      - "traefik.frontend.rule=Host:deaddrop.checker.enowars.com,service8.checker.enowars.com"
+      - "traefik.frontend.rule=Host:deaddrop.checker.enowars.com,service16.checker.enowars.com"
       - "traefik.port=80"
 networks:
   bridge:
