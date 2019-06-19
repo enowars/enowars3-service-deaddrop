@@ -1,6 +1,8 @@
+SERVICE_DIR=	./service
 RELEASE_BRANCH=	release
-REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-messagequeue.git
+REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-deaddrop.git
 RELEASE_DIR=	./new-release
+VERSION_FORMAT=	[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*
 
 .PHONY: release-clone
 release-clone:
@@ -46,7 +48,6 @@ release-qa:
 	${MAKE} -C ${SERVICE_DIR} down
 	git checkout -- ${SERVICE_DIR}/docker-compose.yml
 
-VERSION_FORMAT=	[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*
 .PHONY: release-tag
 release-tag:
 	${MAKE} ${RELEASE_DIR} -f ${PWD}/Makefile do-release-tag

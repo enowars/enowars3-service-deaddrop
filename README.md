@@ -1,5 +1,5 @@
-Message queue service
-=====================
+Deaddrop service
+================
 
 General description
 -------------------
@@ -34,7 +34,7 @@ If you are brave enough you may also decide to use `env VERSION=0.1.0 make -f Ma
 ### Integrating release branch hotfixes back to master
 
 ```sh
-make sync-release-to-master
+make -f Makefile.release sync-release-to-master
 ```
 
 Service
