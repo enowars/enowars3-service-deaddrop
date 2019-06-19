@@ -11,31 +11,25 @@ CI: https://ci.eno.host/browse/SER-MESS
 Releasing
 ---------
 
-### Building, tagging, and pushing an new chcker image to the registry
-
-```sh
-make -C checker publish
-```
-
 ### Updating the release branch with the latest service code from master
 
 ```sh
 # Optionally, clean up any remainings after previous releases.
 make relase-clean
 
-make release-clone
-make release-update
+make -f Makefile.release release-clone
+make -f Makefile.release release-update
 
 # Optionally, try to build and run the container.
-make release-qa
+make -f Makefile.release release-qa
 
-make release-push
-env VERSION=0.1.0 make release-tag
+make -f Makefile.release release-push
+env VERSION=0.1.0 make -f Makefile.release release-tag
 
-make relase-clean
+make -f Makefile.release release-clean
 ```
 
-If you are brave enough you may also decide to use `env VERSION=0.1.0 make release`, which does all the necessary steps mentioned above.
+If you are brave enough you may also decide to use `env VERSION=0.1.0 make -f Makefile.release release`, which does all the necessary steps mentioned above. Just make sure that the version is unique and increasing.
 
 ### Integrating release branch hotfixes back to master
 
