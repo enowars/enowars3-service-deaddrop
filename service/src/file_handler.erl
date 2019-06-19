@@ -98,7 +98,7 @@ append_topic(Topic) ->
     end.
 
 get_priv_path(FileName) ->
-    Path = case code:priv_dir(msq_ctf_service) of
+    Path = case code:priv_dir(deaddrop) of
         {error, bad_name} ->
             "priv";
         PrivDir ->

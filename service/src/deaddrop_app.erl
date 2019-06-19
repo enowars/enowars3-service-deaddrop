@@ -1,4 +1,4 @@
--module(msq_ctf_service_app).
+-module(deaddrop_app).
 -behaviour(application).
 
 -export([start/2]).
@@ -19,7 +19,7 @@ start(_Type, _Args) ->
         #{env => #{dispatch => Dispatch}}
     ),
     cowboy:set_env(api_listener, dispatch, Dispatch),
-	msq_ctf_service_sup:start_link().
+	deaddrop_sup:start_link().
 
 stop(_State) ->
 	ok.

@@ -1,4 +1,4 @@
-PROJECT = msq_ctf_service
+PROJECT = deaddrop
 PROJECT_DESCRIPTION = A simple, buggy message queue.
 PROJECT_VERSION = 0.1.0
 

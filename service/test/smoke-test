@@ -28,9 +28,9 @@ hostname="127.0.0.1"
 add_topic_endpoint="/add_topic"
 topic_endpoint="/topics"
 subscribe_endpoint="/subscribe"
-root_dir="_rel/msq_ctf_service_release"
+root_dir="_rel/deaddrop_release"
 topics_file_path="${root_dir}/topics.txt"
-service_cmd="${root_dir}/bin/msq_ctf_service_release"
+service_cmd="${root_dir}/bin/deaddrop_release"
 
 trap 'clean_up' EXIT
 

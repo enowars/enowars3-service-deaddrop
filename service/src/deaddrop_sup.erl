@@ -1,4 +1,4 @@
--module(msq_ctf_service_sup).
+-module(deaddrop_sup).
 -behaviour(supervisor).
 
 -export([start_link/0]).

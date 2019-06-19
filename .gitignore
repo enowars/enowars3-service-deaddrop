@@ -5,7 +5,7 @@ deps/
 .erlang.mk
 _rel/
 .vagrant/
-msq_ctf_service.d
+deaddrop.d
 *.dump
 *.log
 *.core

@@ -39,8 +39,8 @@ WORKDIR /buildroot
 COPY --from=0 /buildroot /buildroot
 COPY src/add_topic_handler.erl src/
 COPY src/file_handler.erl src/
-COPY src/msq_ctf_service_app.erl src/
-COPY src/msq_ctf_service_sup.erl src/
+COPY src/deaddrop_app.erl src/
+COPY src/deaddrop_sup.erl src/
 COPY src/publish_handler.erl src/
 COPY src/subscribe_handler.erl src/
 COPY src/subscriber_pool.erl src/
@@ -61,4 +61,4 @@ COPY --from=1 /buildroot/_rel /srv
 # Expose relevant ports
 EXPOSE 8080
 
-CMD ["/srv/msq_ctf_service_release/bin/msq_ctf_service_release", "console"]
+CMD ["/srv/deaddrop_release/bin/deaddrop_release", "console"]

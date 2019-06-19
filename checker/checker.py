@@ -15,7 +15,7 @@ def generate_topic(s):
     return sha256ify(s)
 
 
-class MessageQueueChecker(BaseChecker):
+class DeadDropChecker(BaseChecker):
     port = 8080  # default port to send requests to.
     service_name = "deaddrop"
     flag_count = 1
@@ -191,6 +191,6 @@ class MessageQueueChecker(BaseChecker):
         self.debug("Service exploited")
 
 
-app = MessageQueueChecker.service
+app = DeadDropChecker.service
 if __name__ == "__main__":
-    sys.exit(run(MessageQueueChecker))
+    sys.exit(run(DeadDropChecker))
