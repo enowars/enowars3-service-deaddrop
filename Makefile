@@ -74,7 +74,7 @@ test:
 	${MAKE} test-exploit
 
 RELEASE_BRANCH=	release
-REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-messagequeue.git
+REPOSITORY_URL=	ssh://git@git.eno.host:7999/blue/service-deaddrop.git
 RELEASE_DIR=	./new-release
 
 .PHONY: release-clone

@@ -1,5 +1,5 @@
 DOCKER_IMAGE=	checker_mqchecker
-REGISTRY=	repo.treescale.com/bluectf/messagequeue-checker
+REGISTRY=	repo.treescale.com/bluectf/deaddrop-checker
 TAG=		latest
 
 .PHONY: publish
