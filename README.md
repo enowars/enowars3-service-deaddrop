@@ -15,7 +15,7 @@ Releasing
 
 ```sh
 # Optionally, clean up any remainings after previous releases.
-make relase-clean
+make -f Makefile.release release-clean
 
 make -f Makefile.release release-clone
 make -f Makefile.release release-update
