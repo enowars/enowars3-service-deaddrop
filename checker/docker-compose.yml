@@ -26,10 +26,36 @@ services:
     image: nginx:1.13-alpine
     networks:
     - enoverlay
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/conf.d/default.conf
+
+  db:
+    image: mongo
+    networks:
+      - enoverlay
     volumes:
-    - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - deaddrop_db:/data/db
+    deploy:
+      replicas: 1
+      #we need to fix the node otherwise the volumes are lost after migration :/
+      placement:
+        constraints:
+          - "node.hostname==blade5"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ipv6islove
+      MONGO_INITDB_ROOT_PASSWORD: dockerislove
+
+
 networks:
   bridge:
     external: true
   enoverlay:
     external: true
+
+volumes:
+  deaddrop_db
+
+configs:
+  nginx_config:
+    file: ./nginx.conf
