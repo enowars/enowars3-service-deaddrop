@@ -54,7 +54,7 @@ networks:
     external: true
 
 volumes:
-  deaddrop_db
+  deaddrop_db:
 
 configs:
   nginx_config:
