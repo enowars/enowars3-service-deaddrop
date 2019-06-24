@@ -14,3 +14,4 @@ deaddrop.d
 new-release
 service/docker-compose.yml
 *.swp
+.vscode
