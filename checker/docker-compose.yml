@@ -8,7 +8,7 @@ services:
     - MONGO_PORT=27017
     - MONGO_USER=ipv6islove
     - MONGO_PASSWORD=dockerislove
-    image: 10.13.37.7:5000/deaddrop-checker-backend
+    image: dockerreg.enowars.com:5000/deaddrop-checker-backend
     networks:
     - bridge
     - enoverlay
