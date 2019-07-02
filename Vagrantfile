@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
   # config.vm.synced_folder ".", "/vagrant", type: "rsync"
 
-  config.vm.provision "shell", inline: <<-SHELL
+  config.vm.provision "general", type: "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y erlang make git docker.io python3-pip
     pip3 install -r checker/requirements.txt
@@ -30,7 +30,9 @@ Vagrant.configure("2") do |config|
       curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       chmod +x /usr/local/bin/docker-compose
     fi
+  SHELL
 
+  config.vm.provision "vbga5230", type: "shell", run: "never", inline: <<-SHELL
     # Install VirtualBox Guest Addtions 5.2.30.
     if ! [[ $(sudo VBoxService --version) =~ 5.2.30 ]]; then
       wget https://download.virtualbox.org/virtualbox/5.2.30/VBoxGuestAdditions_5.2.30.iso -P /tmp
