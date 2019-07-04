@@ -13,7 +13,6 @@ websocket_init(State) ->
 
 
 websocket_handle(Frame = {text, MessageBin}, State) ->
-    io:fwrite("ws handler received frame: ~p \n", [Frame]),
     List = string:tokens(binary_to_list(MessageBin), ":"),
     Reply = case length(tl(List)) of
         N when N == 1 ->
@@ -66,7 +65,6 @@ replay(Topic) ->
 
 check_topic(Topic) ->
     Topics = gen_event:call({global, file_handler}, file_handler, {topics}),
-    io:fwrite("Topics: ~p", [Topics]),
     lists:member(Topic, Topics).
 
 websocket_info({publish, Text}, State) ->
