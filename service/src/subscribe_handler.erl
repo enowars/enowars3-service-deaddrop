@@ -62,7 +62,6 @@ subscribe(Topic) ->
 
 replay(Topic) ->
     Result = gen_event:call({global, file_handler}, file_handler, {replay, Topic}),
-    % io:fwrite("rplay got: ~p \n", [Result]).
     Result.
 
 check_topic(Topic) ->
