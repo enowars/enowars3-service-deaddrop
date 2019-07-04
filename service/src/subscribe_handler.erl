@@ -12,7 +12,7 @@ websocket_init(State) ->
     {reply, {text, "Heyhey from WS Handler.."}, State}.
 
 
-websocket_handle(Frame = {text, MessageBin}, State) ->
+websocket_handle({text, MessageBin}, State) ->
     List = string:tokens(binary_to_list(MessageBin), ":"),
     Reply = case length(tl(List)) of
         N when N == 1 ->
