@@ -6,9 +6,7 @@
 init(Req0=#{method := <<"POST">>}, State) ->
     Req = case cowboy_req:read_body(Req0) of
         {ok, Data, _} when erlang:size(Data) =< 7000 ->
-            % TODO: Introduce error handling for unfinished messages
             Message = string:tokens(string:trim(binary_to_list(Data)), ":"),
-            io:fwrite("Got: ~p \n", [Data]),
             Topic = hd(Message),
             Content = hd(tl(Message)),
             % Trigger saving

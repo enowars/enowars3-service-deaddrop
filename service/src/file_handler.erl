@@ -21,7 +21,6 @@ init(_) ->
 
 % Event: {method, msg}
 handle_event(Event, State) ->
-    io:fwrite("Rcv event in file_handler \n"),
     case Event of
         {new, {Topic, Message}} -> save_message(Topic, Message);
         {replay, _} -> ok
@@ -55,7 +54,6 @@ create_message_save(Topic) ->
     Path = get_priv_path(FileName),
     case file:open(Path, [append]) of
         {ok, Fh} ->
-            io:fwrite("Writing to path: ~p \n", [Path]),
             file:write(Fh, io_lib:format("All messages sent on topic: ~s\n", [Topic])),
             {ok};
         {error, _} -> {error, "Error while creating message save."}
@@ -78,9 +76,7 @@ retrieve_messages(Topic) ->
 retrieve_topics() ->
     FileName = "topics.txt",
     Path = get_priv_path(FileName),
-    io:fwrite("Reading from path: ~p \n", [Path]),
     {ok, Binary} = file:read_file(Path),
-    io:fwrite("Got: ~p \n", [binary_to_list(Binary)]),
     Topics = binary_to_list(Binary) ++ "- topics",
     string:tokens(Topics, "\n").
 
