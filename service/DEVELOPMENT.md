@@ -24,7 +24,7 @@ General Details
 -	`/subscribe`
 	-	Upgrades to Websocket automatically
 	-	When connected use `SUBSCRIBE: topicname` to subscribe to topics
-	-	Use `REPLAY: topicname` to receive all messages sent to Topic `topicname`
+	-	Use `REPLAY:+ topicname` to receive all messages sent to Topic `topicname`
 -	`/topics`
 	-	GET
 -	`/add_topic`

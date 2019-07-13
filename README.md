@@ -4,38 +4,18 @@ Deaddrop service
 General description
 -------------------
 
-This service will be a message queue much like [Apache Kafka](https://kafka.apache.org/). The core functionality will be written in [Erlang](https://www.erlang.org/).
+This service is publish/subscriber message queue written in [Erlang](https://www.erlang.org/). It was created for the [ENOWARS 3](https://enowars.com/) A/D-CTF.
 
-CI: https://ci.eno.host/browse/SER-MESS
+Vulnerabiliy
+---------
+The vulnerability included in the service is connected with the topic replay function. Actual exploit code can be found in [checker/checker.py](checker/checker.py).  
+Internally all messages that are sent through the service are saved to a simple text file. There is one file per topic. There is also one file called `topics.txt` that holds all topics that are currently available. The `topics.txt` file is used with the `/topics` endpoint to serve the currently available topics. The topics files are used to enable the replay feature. For this the content of the files is read and printed to the websocket connection requesting the replay. If one requests a replay of the private topic `- topics`, one receives all topics, not only the public one published through the `/topics` endpoint. By knowing all private topics one is able to replay those and retrieve flags that were published to those topics.
 
 Releasing
 ---------
 
-### Updating the release branch with the latest service code from master
-
-```sh
-# Optionally, clean up any remainings after previous releases.
-make -f Makefile.release release-clean
-
-make -f Makefile.release release-clone
-make -f Makefile.release release-update
-
-# Optionally, try to build and run the container.
-make -f Makefile.release release-qa
-
-make -f Makefile.release release-push
-env VERSION=0.1.0 make -f Makefile.release release-tag
-
-make -f Makefile.release release-clean
-```
-
-If you are brave enough you may also decide to use `env VERSION=0.1.0 make -f Makefile.release release`, which does all the necessary steps mentioned above. Just make sure that the version is unique and increasing.
-
-### Integrating release branch hotfixes back to master
-
-```sh
-make -f Makefile.release sync-release-to-master
-```
+The release branch has become obsolete by now. Releases are now handled by tagging a commit with a version number following the [semantic versioning scheme](https://semver.org/).  
+The included release makefile can still be used for inspiration.
 
 Service
 -------
@@ -90,23 +70,14 @@ Ideas
 
 ### Feature Ideas
 
--	Clients will be able to subscribe and publish messages to topics. Every subscriber of a topic will receive messages published to said topic.
--	Messages will be persisted into files. By saving an offset a subscriber will be able to re-read/re-send messages.
 -	Persistance files will regularly be compressed to save space.
 -	Partitions of topics allow to parallelize message handling over different clients.
--	A REST-API to interact with the queue.
--	Secret topics that require authentication. This has to be included at least once w/o bugs to enable the checker to work.
+-	Private topics require authentication. 
 
 ### Bug Ideas
 
--	A message triggers a flag to be published to a "flag" topic. Fixable by removing the flag from the triggered message. The trigger-message can be crafted by understanding some random algorithm within the source.
 -	Some kind of path traversal when re-sending messages?
 -	Overflowing the log files?
-
-Credits
--------
-
--	socket_server.erl is based on code provided by 'Jesse E.I. Farmer jesse@20bits.com'
 
 References
 ----------
