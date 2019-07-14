@@ -4,7 +4,7 @@ Deaddrop service
 General description
 -------------------
 
-This service is publish/subscriber message queue written in [Erlang](https://www.erlang.org/). It was created for the [ENOWARS 3](https://enowars.com/) A/D-CTF.
+This service is a publish/subscriber message queue written in [Erlang](https://www.erlang.org/). It was created for the [ENOWARS 3](https://enowars.com/) attack/defense CTF.
 
 Vulnerability
 -------------
