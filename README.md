@@ -13,6 +13,10 @@ The vulnerability included in the service is connected with the topic replay fun
 
 Internally all messages that are sent through the service are saved to a simple text file. There is one file per topic. There is also one file called `topics.txt` that holds all topics that are currently available. The `topics.txt` file is used with the `/topics` endpoint to serve the currently available topics. The topic files are used to enable the replay feature. For this the content of the files is read and printed to a WebSocket connection requesting the replay. It is possible to retrieve all topics (not only the public ones available via the `/topics` endpoint) if a replay of the private topic `- topics` is requested. As a result, one is able to replay private topics to get the flags.
 
+### Write-ups
+
+-	https://saarsec.rocks/2019/07/12/deaddrop.html
+
 Releasing
 ---------
 
