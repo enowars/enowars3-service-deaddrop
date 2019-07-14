@@ -43,3 +43,8 @@ General Details
 ### Dependencies
 
 -	Erlang 21
+
+References
+----------
+
+-	https://github.com/erlang/docker-erlang-example

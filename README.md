@@ -79,8 +79,3 @@ Ideas
 
 -	Some kind of path traversal when re-sending messages?
 -	Overflowing the log files?
-
-References
-----------
-
--	https://github.com/erlang/docker-erlang-example
