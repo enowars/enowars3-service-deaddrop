@@ -22,7 +22,7 @@ General Details
 	-	Payload: `Topic 1:message_string`
 	-	Sends call to event handler `file_handler` to save received msg to file `Topic 1_msg_save.txt`
 -	`/subscribe`
-	-	Upgrades to Websocket automatically
+	-	Upgrades to WebSocket automatically
 	-	When connected use `SUBSCRIBE: topicname` to subscribe to topics
 	-	Use `REPLAY:+ topicname` to receive all messages sent to Topic `topicname`
 -	`/topics`
