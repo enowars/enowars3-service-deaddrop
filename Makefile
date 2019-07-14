@@ -129,4 +129,3 @@ ultra-clean:
 	${MAKE} -C service distclean
 	rm -rf -- .data
 	rm -rf -- checker/.data
-	${MAKE} -f Makefile.release release-clean

@@ -16,8 +16,7 @@ Internally all messages that are sent through the service are saved to a simple 
 Releasing
 ---------
 
-The release branch has become obsolete by now. Releases are now handled by tagging a commit with a version number following the [semantic versioning scheme](https://semver.org/).  
-The included release makefile can still be used for inspiration.
+Releases are now handled by tagging a commit with a version number following the [semantic versioning scheme](https://semver.org/).
 
 Service
 -------
